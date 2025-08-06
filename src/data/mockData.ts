@@ -130,7 +130,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Chamath discusses the potential of the Indian market and investment opportunities in emerging economies.',
     creator: getCreator('2'),
     duration: '0:00', // Will be updated with actual duration
-    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Marke.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Chamath.jpg',
     category: 'Business',
     releaseDate: '2024-01-12'
