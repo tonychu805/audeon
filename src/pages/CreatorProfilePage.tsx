@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Users } from 'lucide-react';
 import { TrackCard } from '../components/TrackCard';
-import { creators } from '../data/mockData';
+import { creators } from '../data/creators';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 

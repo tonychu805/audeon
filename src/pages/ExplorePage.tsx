@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { CreatorCard } from '../components/CreatorCard';
-import { categories, creators } from '../data/mockData';
+import { categories } from '../data/categories';
+import { creators } from '../data/creators';
 
 interface ExplorePageProps {
   onCreatorClick: (creatorId: string) => void;
