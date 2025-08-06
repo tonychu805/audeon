@@ -130,7 +130,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Chamath discusses the potential of the Indian market and investment opportunities in emerging economies.',
     creator: getCreator('2'),
     duration: '0:00', // Will be updated with actual duration
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Chamath.jpg',
     category: 'Business',
     releaseDate: '2024-01-12'
@@ -165,7 +165,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Exploring how AI agents can revolutionize data workflows and analytics engineering practices.',
     creator: getCreator('4'),
     duration: '0:00', // Will be updated with actual duration
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Tristan Handy.jpg',
     category: 'Data Science',
     releaseDate: '2024-01-05'
@@ -199,7 +199,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Jason Ganz takes us on a journey through different data universes and analytical approaches.',
     creator: getCreator('12'),
     duration: '21:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Jason Ganz.jpg',
     category: 'Data Science',
     releaseDate: '2023-12-30'
@@ -232,7 +232,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Exploring positive trends and emerging opportunities in the analytics engineering space.',
     creator: getCreator('4'),
     duration: '14:50',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Tristan Handy.jpg',
     category: 'Data Science',
     releaseDate: '2023-12-22'
@@ -266,7 +266,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'A stoic approach to morning meditation and finding peace in daily challenges.',
     creator: getCreator('5'),
     duration: '8:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Allan John.png',
     category: 'Psychology',
     releaseDate: '2023-12-15'
@@ -300,7 +300,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Exploring how product teams can establish reliable sources of truth for better decision making.',
     creator: getCreator('6'),
     duration: '21:10',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/John Cutler.jpg',
     category: 'Product Management',
     releaseDate: '2023-12-08'
@@ -333,7 +333,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The challenges of empowering teams for delivery while maintaining strategic alignment.',
     creator: getCreator('6'),
     duration: '19:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/John Cutler.jpg',
     category: 'Product Management',
     releaseDate: '2023-12-01'
@@ -366,7 +366,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Understanding different team dynamics and how they impact product development.',
     creator: getCreator('6'),
     duration: '17:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/John Cutler.jpg',
     category: 'Product Management',
     releaseDate: '2023-11-22'
@@ -399,7 +399,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The four pillars of effective product management and team collaboration.',
     creator: getCreator('6'),
     duration: '24:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/John Cutler.jpg',
     category: 'Product Management',
     releaseDate: '2023-11-15'
@@ -433,7 +433,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Exploring the intersection of autonomy and consequentialist moral theory.',
     creator: getCreator('7'),
     duration: '22:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Richard Chappell.jpg',
     category: 'Psychology',
     releaseDate: '2025-07-14'
@@ -466,7 +466,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Examining the potential downsides and limitations of collaborative approaches.',
     creator: getCreator('7'),
     duration: '19:25',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Richard Chappell.jpg',
     category: 'Psychology',
     releaseDate: '2025-07-08'
@@ -499,7 +499,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The boundaries and limitations of rational decision-making in complex scenarios.',
     creator: getCreator('7'),
     duration: '23:10',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Richard Chappell.jpg',
     category: 'Psychology',
     releaseDate: '2022-05-05'
@@ -533,7 +533,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'How AI can enhance collective intelligence rather than diminish individual thinking capabilities.',
     creator: getCreator('8'),
     duration: '17:40',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Ethan Mollick.jpg',
     category: 'Business',
     releaseDate: '2025-07-07'
@@ -566,7 +566,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Three approaches to successfully implementing AI in organizations and teams.',
     creator: getCreator('8'),
     duration: '28:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Ethan Mollick.jpg',
     category: 'Business',
     releaseDate: '2025-05-22'
@@ -632,7 +632,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Analysis of the latest AI models and what they tell us about the future of AI.',
     creator: getCreator('8'),
     duration: '24:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Ethan Mollick.jpg',
     category: 'Business',
     releaseDate: '2022-11-08'
@@ -666,7 +666,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'A case study in brand social media strategy and the decision to embrace viral content.',
     creator: getCreator('9'),
     duration: '15:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2025-07-24'
@@ -699,7 +699,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'How a local library became a social media sensation through authentic community engagement.',
     creator: getCreator('9'),
     duration: '16:45',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2021-02-03'
@@ -732,7 +732,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The viral video strategy that transformed a small brand into a social media phenomenon.',
     creator: getCreator('9'),
     duration: '22:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2021-02-03'
@@ -766,7 +766,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Analysis of the dollar\'s strength and its impact on global rivals, particularly China\'s currency strategy.',
     creator: getCreator('10'),
     duration: '28:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Michael Howell.jpg',
     category: 'Finance',
     releaseDate: '2025-07-25'
@@ -799,7 +799,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Analysis of Janet Yellen\'s economic policies and their impact on gold prices.',
     creator: getCreator('10'),
     duration: '24:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Michael Howell.jpg',
     category: 'Finance',
     releaseDate: '2023-05-02'
@@ -832,7 +832,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Analyzing the key drivers of global liquidity and their future implications.',
     creator: getCreator('10'),
     duration: '25:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Michael Howell.jpg',
     category: 'Finance',
     releaseDate: '2023-05-02'
@@ -866,7 +866,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Risk management strategies and market timing considerations for short positions.',
     creator: getCreator('11'),
     duration: '18:45',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Arbitrage Andy.jpg',
     category: 'Finance',
     releaseDate: '2021-03-07'
@@ -932,7 +932,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Historical parallels and their relevance to current geopolitical and economic situations.',
     creator: getCreator('11'),
     duration: '26:35',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Arbitrage Andy.jpg',
     category: 'Finance',
     releaseDate: '2021-03-07'
@@ -966,7 +966,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'An ex-Uber researcher explains the key differences between academic and industry data science roles.',
     creator: getCreator('3'),
     duration: '18:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Daliana.jpg',
     category: 'Data Science',
     releaseDate: '2023-10-23'
@@ -999,7 +999,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Common pitfalls and biases that can invalidate your A/B testing results.',
     creator: getCreator('3'),
     duration: '15:50',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_06_53_Seasoned Entrepreneur_pvc_sp100_s50_sb75_se45_b_m2.mp3'),
+    audioUrl: getAudioUrl('Chamath Palihapitiya - Deep Dive: Is India the Next Big Market.mp3'),
     coverImage: '/images/creators/Daliana.jpg',
     category: 'Data Science',
     releaseDate: '2023-08-29'
