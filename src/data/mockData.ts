@@ -118,7 +118,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Naval shares his thoughts on building wealth and the importance of specific knowledge in creating value.',
     creator: getCreator('1'),
     duration: '0:00', // Will be updated with actual duration
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Naval.jpg',
     category: 'Business',
     releaseDate: '2024-01-15'
@@ -154,7 +154,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Most recently, I\'m the founder of dbt Labs, co-creator of dbt, and pioneer of the analytics engineering workflow.',
     creator: getCreator('4'),
     duration: '0:00', // Will be updated with actual duration
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Tristan Handy.jpg',
     category: 'Data Science',
     releaseDate: '2024-01-08'
@@ -188,7 +188,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'A deep dive into how artificial intelligence is transforming business intelligence and analytics.',
     creator: getCreator('4'),
     duration: '25:45',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Tristan Handy.jpg',
     category: 'Data Science',
     releaseDate: '2024-01-01'
@@ -221,7 +221,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Understanding different types of analytics professionals and their unique approaches to data.',
     creator: getCreator('4'),
     duration: '17:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Tristan Handy.jpg',
     category: 'Data Science',
     releaseDate: '2023-12-25'
@@ -255,7 +255,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Practical philosophy to help you learn from the past, plan for the future, and live in the present.',
     creator: getCreator('5'),
     duration: '16:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Allan John.png',
     category: 'Psychology',
     releaseDate: '2023-12-18'
@@ -288,7 +288,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Using stoic philosophy to manage anxiety and find inner peace in turbulent times.',
     creator: getCreator('5'),
     duration: '15:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Allan John.png',
     category: 'Psychology',
     releaseDate: '2023-12-10'
@@ -322,7 +322,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Understanding the complex feedback loops in product strategy and big picture thinking.',
     creator: getCreator('6'),
     duration: '23:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/John Cutler.jpg',
     category: 'Product Management',
     releaseDate: '2023-12-03'
@@ -388,7 +388,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The philosophy and practice of helping in product management and team leadership.',
     creator: getCreator('6'),
     duration: '18:45',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/John Cutler.jpg',
     category: 'Product Management',
     releaseDate: '2023-11-18'
@@ -455,7 +455,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'A deep dive into the fundamental differences between consequentialist and deontological ethics.',
     creator: getCreator('7'),
     duration: '26:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Richard Chappell.jpg',
     category: 'Psychology',
     releaseDate: '2024-01-07'
@@ -488,7 +488,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'How abstract philosophical debates can have real-world consequences.',
     creator: getCreator('7'),
     duration: '17:35',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Richard Chappell.jpg',
     category: 'Psychology',
     releaseDate: '2022-05-05'
@@ -521,7 +521,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Exploring radical theories of perception and consciousness in philosophy of mind.',
     creator: getCreator('7'),
     duration: '25:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Richard Chappell.jpg',
     category: 'Psychology',
     releaseDate: '2022-05-05'
@@ -555,7 +555,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'A creative and engaging overview of AI development through the lens of otter imagery.',
     creator: getCreator('8'),
     duration: '21:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Ethan Mollick.jpg',
     category: 'Business',
     releaseDate: '2025-06-01'
@@ -588,7 +588,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Exploring the uneven capabilities of advanced AI systems and what comes next.',
     creator: getCreator('8'),
     duration: '26:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Ethan Mollick.jpg',
     category: 'Business',
     releaseDate: '2025-04-20'
@@ -621,7 +621,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The power of AI code generation and how it\'s changing software development.',
     creator: getCreator('8'),
     duration: '16:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Ethan Mollick.jpg',
     category: 'Business',
     releaseDate: '2025-03-11'
@@ -655,7 +655,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'How brands can create authentic experiences that resonate with audiences through strategic partnerships.',
     creator: getCreator('9'),
     duration: '19:55',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2025-07-31'
@@ -688,7 +688,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Lessons learned from a decade of storytelling at one of the world\'s most beloved brands.',
     creator: getCreator('9'),
     duration: '23:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2025-07-03'
@@ -721,7 +721,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Essential tools and equipment recommendations from experienced social media professionals.',
     creator: getCreator('9'),
     duration: '14:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2021-02-03'
@@ -743,7 +743,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Comprehensive strategies for building a successful brand presence on YouTube.',
     creator: getCreator('9'),
     duration: '27:40',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T18_49_18_Professional Speaker, Coach, Podcast Host_pvc_sp102_s35_sb68_se48_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2021-02-03'
@@ -754,7 +754,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'How political campaigns are using innovative digital strategies to reach voters.',
     creator: getCreator('9'),
     duration: '20:35',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Rachel Karten.jpg',
     category: 'Marketing',
     releaseDate: '2021-02-03'
@@ -788,7 +788,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'A framework for understanding asset valuation in the current monetary environment.',
     creator: getCreator('10'),
     duration: '26:40',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Michael Howell.jpg',
     category: 'Finance',
     releaseDate: '2023-05-02'
@@ -821,7 +821,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The paradox of rising asset prices amid economic uncertainty and inflation concerns.',
     creator: getCreator('10'),
     duration: '19:30',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Michael Howell.jpg',
     category: 'Finance',
     releaseDate: '2023-05-02'
@@ -855,7 +855,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Weekly market roundup covering tech innovations, precious metals, and cultural shifts affecting markets.',
     creator: getCreator('11'),
     duration: '25:10',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Arbitrage Andy.jpg',
     category: 'Finance',
     releaseDate: '2025-07-24'
@@ -888,7 +888,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Examining the cultural and economic implications of demographic and policy changes.',
     creator: getCreator('11'),
     duration: '27:15',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Arbitrage Andy.jpg',
     category: 'Finance',
     releaseDate: '2021-03-07'
@@ -921,7 +921,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Geopolitical risks and their implications for international markets and security.',
     creator: getCreator('11'),
     duration: '24:50',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Arbitrage Andy.jpg',
     category: 'Finance',
     releaseDate: '2021-03-07'
@@ -955,7 +955,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Key principles that distinguish exceptional data scientists from the average practitioner.',
     creator: getCreator('3'),
     duration: '20:45',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Daliana.jpg',
     category: 'Data Science',
     releaseDate: '2024-11-01'
@@ -988,7 +988,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Examining the role and responsibilities of product data scientists in modern tech companies.',
     creator: getCreator('3'),
     duration: '17:25',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Daliana.jpg',
     category: 'Data Science',
     releaseDate: '2023-09-24'
@@ -1021,7 +1021,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'Three essential practices that separate good data scientists from great ones.',
     creator: getCreator('3'),
     duration: '18:20',
-    audioUrl: getAudioUrl('ElevenLabs_2025-07-31T19_05_11_Viraj - Smooth and Gentle Narrator_pvc_sp108_s37_sb19_se43_b_m2.mp3'),
+    audioUrl: getAudioUrl('Naval Ravikant - Insights on Wealth Creation.mp3'),
     coverImage: '/images/creators/Daliana.jpg',
     category: 'Data Science',
     releaseDate: '2023-02-19'
