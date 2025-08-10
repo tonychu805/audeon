@@ -19,7 +19,7 @@ export const audioTracks: AudioTrack[] = [
     description: 'The article discusses how practicing communication in small, low-stakes interactions, such as writing prompts for AI, can help product managers improve their overall communication skills. This repetition and focus on clarity, context, intent, and concision can make product managers more effective communicators, leading to better alignment of teams, de-risking decisions, and telling compelling stories.',
     creator: getCreator('13'),
     duration: '0:00', // Will be updated dynamically
-    audioUrl: getAudioUrl('01_How prompt engineering is teaching us to communicate like product leaders.mp3'),
+    audioUrl: getAudioUrl('mind_the_product/01_How prompt engineering is teaching us to communicate like product leaders.mp3'),
     coverImage: '/images/creators/Madison Fugard.jpg',
     category: 'Product Management',
     releaseDate: '2025-07-28'
