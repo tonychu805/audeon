@@ -96,5 +96,13 @@ export const creators: Creator[] = [
     bio: 'Data storyteller and analytics expert exploring the multiverse of data insights',
     category: 'Data Science',
     followerCount: 85000
+  },
+  {
+    id: '13',
+    name: 'Madison Fugard',
+    image: '/images/creators/Madison Fugard.jpg',
+    bio: 'Product manager focused on digital health with a background as a clinician',
+    category: 'Product Management',
+    followerCount: 25000
   }
 ];
