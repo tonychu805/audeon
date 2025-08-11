@@ -8,6 +8,12 @@ const getAudioUrl = (filename: string) => {
   return data.publicUrl;
 };
 
+// Helper function to get Supabase cover image URL
+const getCoverImageUrl = (filename: string) => {
+  const { data } = supabase.storage.from('cover-images').getPublicUrl(filename);
+  return data.publicUrl;
+};
+
 // Helper function to find creator by ID
 const getCreator = (id: string) => creators.find(c => c.id === id)!;
 
@@ -20,7 +26,7 @@ export const audioTracks: AudioTrack[] = [
     creator: getCreator('13'),
     duration: '0:00', // Will be updated dynamically
     audioUrl: getAudioUrl('mind_the_product/01_How prompt engineering is teaching us to communicate like product leaders/01_How prompt engineering is teaching us to communicate like product leaders.mp3'),
-    coverImage: '/mind_the_product/cover_images/01_How prompt engineering is teaching us to communicate like product leaders_cover.png',
+    coverImage: getCoverImageUrl('mind_the_product/cover_images/01_How prompt engineering is teaching us to communicate like product leaders_cover.png'),
     category: 'Product Management',
     releaseDate: '2025-07-28'
   },
