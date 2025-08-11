@@ -43,6 +43,14 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
           src={track.coverImage} 
           alt={track.title}
           className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+          onError={(e) => {
+            console.error('Image load error for:', track.title, track.coverImage);
+            // Fallback to creator image
+            e.currentTarget.src = track.creator.image;
+          }}
+          onLoad={() => {
+            console.log('Image loaded successfully for:', track.title, track.coverImage);
+          }}
         />
         <div className="flex-1">
           <h3 className="font-bold text-gray-900 text-lg mb-1 line-clamp-2">{track.title}</h3>

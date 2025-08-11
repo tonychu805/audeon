@@ -10,7 +10,9 @@ const getAudioUrl = (filename: string) => {
 
 // Helper function to get Supabase cover image URL
 const getCoverImageUrl = (filename: string) => {
-  const { data } = supabase.storage.from('cover-images').getPublicUrl(filename);
+  console.log('getCoverImageUrl called with filename:', filename);
+  const { data } = supabase.storage.from('audio-files').getPublicUrl(filename);
+  console.log('Generated cover image URL:', data.publicUrl);
   return data.publicUrl;
 };
 
