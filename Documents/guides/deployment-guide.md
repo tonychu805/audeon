@@ -1,6 +1,14 @@
 # Deployment & Environment Guide
 
-**For:** Production deployment and environment management  
+**Version:** 1.1  
+**Updated:** 2025-09-08  
+**Author:** Claude Code  
+**Status:** Current  
+**For:** Production deployment and environment management
+
+## Changelog
+- v1.1 (2025-09-08): Documentation reorganization
+- v1.0 (2025-09-07): Initial deployment guide  
 **Updated:** 2025-09-07
 
 ## Environment Configuration

@@ -1,7 +1,15 @@
 # Database Schema & Migration Guide
 
+**Version:** 2.1  
+**Updated:** 2025-09-08  
+**Author:** Claude Code  
+**Status:** Current  
 **Database:** Supabase PostgreSQL  
-**Updated:** 2025-09-07
+
+## Changelog
+- v2.1 (2025-09-08): Documentation reorganization and cleanup
+- v2.0 (2025-09-07): Added categories foreign key relationships
+- v1.0 (2025-09-06): Initial database migration from mock data
 
 ## Schema Overview
 

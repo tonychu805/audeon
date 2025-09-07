@@ -1,7 +1,16 @@
 # Development Workflow
 
-**For:** Long-term Audeon development  
-**Updated:** 2025-09-07
+**Version:** 1.2  
+**Updated:** 2025-09-08  
+**Author:** Claude Code  
+**Status:** Current  
+
+**For:** Long-term Audeon development
+
+## Changelog
+- v1.2 (2025-09-08): Added session context and active issues tracking
+- v1.1 (2025-09-07): Added Linear integration workflow
+- v1.0 (2025-09-07): Initial development workflow documentation
 
 ## Quick Start
 
@@ -93,11 +102,24 @@ src/
 - Check database service return types
 - Run `npm run build` to catch issues
 
+## Current Session Context
+
+### Active Issues (Created 2025-09-08)
+- **AUD-9**: Audio player not functioning (High priority)
+- **AUD-16**: Track metadata display issues (High priority)  
+- **AUD-17**: Navigation white screens (High priority)
+
+### Session Continuity
+- **Status File**: Check `Documents/Session_Status.md` for current progress
+- **Database**: Live Supabase connection with seeded data
+- **Environment**: All variables configured, dev server ready
+- **Branch**: Working on `main` (AUD-11 successfully merged)
+
 ## Linear Integration Workflow
 
 ### Issue Management Protocol
 - **Always ask permission** before creating Linear issues
-- **Reference issues** when working: "Working on AUD-11" 
+- **Reference issues** when working: "Working on AUD-X" 
 - **Confirm completion** before marking issues Done
 - **User controls Linear** - Claude executes technical work
 

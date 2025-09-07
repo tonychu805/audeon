@@ -92,6 +92,29 @@ VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
 
+## Documentation Standards
+
+### File Organization
+- **Check Documentation Guidelines**: Always read `Documents/README.md` before creating new docs
+- **Follow Structure**: Use established folders (`current/`, `guides/`, `sessions/`, `archive/`)
+- **Version Headers**: All new documents need version control headers
+- **Master Index**: Update `Documents/README.md` when adding new documentation
+
+### Document Templates
+```markdown
+# Document Title
+
+**Version:** 1.0  
+**Updated:** YYYY-MM-DD  
+**Author:** Claude Code  
+**Status:** Current  
+
+## Changelog
+- v1.0 (date): Initial creation
+
+[Document content]
+```
+
 ## Code Conventions
 
 - TypeScript strict mode enabled
@@ -150,6 +173,51 @@ Cut redundancy: Remove duplicate code, especially multiple “theme hooks,” ta
 #### Demand clear architecture: Modular TypeScript and a solid UI library: good! Untested or orphaned folders and services: trash them.
 
 #### Be direct and blunt: "This file is a mess—clean it up." No wasted words, no sugarcoating—author gets precise, actionable feedback.
+
+## Development Framework Preferences
+
+### React & TypeScript Standards
+- **React**: Functional components with hooks pattern only
+- **TypeScript**: Strict mode enabled, interface-first approach
+- **State Management**: React Context API preferred over external libraries
+- **Component Structure**: Modular composition with clear prop interfaces
+- **Import Organization**: React, types, components, utils (in that order)
+
+### Code Quality Gates
+- **Pre-commit**: `npm run lint` must pass
+- **Pre-build**: `npm run build` must succeed  
+- **No TODO Comments**: Complete implementations, no placeholders
+- **Database Changes**: Test with seed data first
+- **Version Control**: Feature branches only, never work on main
+
+### Architecture Patterns
+- **Single Page Application**: Tab-based navigation with state management
+- **Service Layer**: Database operations through `src/services/`
+- **Hook Pattern**: Custom hooks for async data fetching
+- **Component Props**: Callback pattern for navigation between pages
+
+## Todo Management Protocol
+
+### When to Use TodoWrite
+- **Multi-step tasks** (>3 steps requiring coordination)
+- **Complex scope** (>2 directories OR >3 files)
+- **User provides multiple tasks** (numbered or comma-separated lists)
+- **After receiving new instructions** to capture all requirements
+
+### Todo Lifecycle
+1. **Plan Phase**: Create todos with clear, actionable items
+2. **Execution**: Mark ONLY ONE todo as `in_progress` at a time
+3. **Completion**: Mark `completed` IMMEDIATELY after finishing each task
+4. **Validation**: Run quality checks before marking complete
+
+### Todo Writing Standards
+```json
+{
+  "content": "Fix authentication bug",           // Imperative form
+  "activeForm": "Fixing authentication bug",   // Present continuous  
+  "status": "pending" | "in_progress" | "completed"
+}
+```
 
 ## Linear Integration Workflow
 
