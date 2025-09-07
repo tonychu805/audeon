@@ -26,3 +26,35 @@ dist-ssr
 
 # Local Netlify folder
 .netlify
+
+# Environment files
+.env*
+!.env.example
+.env.local
+.env.production
+.env.development
+
+# Build and cache files
+.vite/
+*.tsbuildinfo
+.cache/
+coverage/
+
+# System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Supabase development
+.supabase/
+supabase/.env
+supabase/.branches/
+
+# Development artifacts
+.bolt/
+*.tmp
+*.temp
+debug.log
+*.pid
+*.seed
+*.pid.lock

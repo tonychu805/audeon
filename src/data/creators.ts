@@ -1,4 +1,11 @@
 import { Creator } from '../types';
+import { supabase } from '../lib/supabase';
+
+// Helper function to get Supabase creator image URL
+const getCoverImageUrl = (filename: string) => {
+  const { data } = supabase.storage.from('audio-files').getPublicUrl(filename);
+  return data.publicUrl;
+};
 
 export const creators: Creator[] = [
   {
@@ -27,82 +34,82 @@ export const creators: Creator[] = [
   },
   {
     id: '4',
-    name: 'Tristan Handy',
-    image: '/images/creators/Tristan Handy.jpg',
-    bio: 'Founder of dbt Labs, co-creator of dbt, and pioneer of the analytics engineering workflow',
-    category: 'Data Science',
-    followerCount: 320000
-  },
-  {
-    id: '5',
-    name: 'Allan John',
-    image: '/images/creators/Allan John.png',
-    bio: 'Practical philosophy to help you learn from the past, plan for the future, and live in the present',
-    category: 'Psychology',
-    followerCount: 180000
-  },
-  {
-    id: '6',
-    name: 'John Cutler',
-    image: '/images/creators/John Cutler.jpg',
-    bio: 'Product management expert who loves wrangling complex problems and answering the why with data',
-    category: 'Product Management',
-    followerCount: 290000
-  },
-  {
-    id: '7',
-    name: 'Richard Chappell',
-    image: '/images/creators/Richard Chappell.jpg',
-    bio: 'Philosopher exploring ethics, consequentialism, moral theory, and effective altruism',
-    category: 'Psychology',
-    followerCount: 190000
-  },
-  {
-    id: '8',
-    name: 'Ethan Mollick',
-    image: '/images/creators/Ethan Mollick.jpg',
-    bio: 'AI researcher and business strategist exploring the future of work and technology',
-    category: 'Business',
-    followerCount: 520000
-  },
-  {
-    id: '9',
-    name: 'Rachel Karten',
-    image: '/images/creators/Rachel Karten.jpg',
-    bio: 'Marketing strategist and social media expert helping brands tell better stories',
-    category: 'Marketing',
-    followerCount: 210000
-  },
-  {
-    id: '10',
-    name: 'Michael Howell',
-    image: '/images/creators/Michael Howell.jpg',
-    bio: 'Financial analyst and economist specializing in global liquidity and market dynamics',
-    category: 'Finance',
-    followerCount: 380000
-  },
-  {
-    id: '11',
-    name: 'Arbitrage Andy',
-    image: '/images/creators/Arbitrage Andy.jpg',
-    bio: 'Financial markets analyst covering geopolitics, crypto, and market trends',
-    category: 'Finance',
-    followerCount: 150000
-  },
-  {
-    id: '12',
-    name: 'Jason Ganz',
-    image: '/images/creators/Jason Ganz.jpg',
-    bio: 'Data storyteller and analytics expert exploring the multiverse of data insights',
-    category: 'Data Science',
-    followerCount: 85000
-  },
-  {
-    id: '13',
     name: 'Madison Fugard',
     image: '/images/creators/Madison Fugard.jpg',
     bio: 'Product manager focused on digital health with a background as a clinician',
     category: 'Product Management',
     followerCount: 25000
+  },
+  {
+    id: '5',
+    name: 'Julie Zhou',
+    image: getCoverImageUrl('creators/julie-zhuo.jpeg'),
+    bio: 'Former VP of Product Design at Facebook, author of The Making of a Manager',
+    category: 'Product Management',
+    followerCount: 180000
+  },
+  {
+    id: '6',
+    name: 'Shayna Stewart',
+    image: getCoverImageUrl('creators/shayna-stewart.jpeg'),
+    bio: 'Director, Strategic Business Development at Turner Sports, NBA Digital',
+    category: 'Data Science',
+    followerCount: 45000
+  },
+  {
+    id: '7',
+    name: 'Louron Pratt',
+    image: getCoverImageUrl('creators/louron-pratt.jpeg'),
+    bio: 'Product management expert and community leader',
+    category: 'Product Management',
+    followerCount: 35000
+  },
+  {
+    id: '8',
+    name: 'Marty Cagan',
+    image: getCoverImageUrl('creators/marty-cagan.jpeg'),
+    bio: 'Founder of Silicon Valley Product Group (SVPG), renowned product management thought leader',
+    category: 'Product Management',
+    followerCount: 250000
+  },
+  {
+    id: '9',
+    name: 'Kyle Poyar',
+    image: getCoverImageUrl('creators/kyle-poyar.jpeg'),
+    bio: 'Growth and marketing expert, author of Growth Unhinged newsletter',
+    category: 'Marketing',
+    followerCount: 85000
+  },
+  {
+    id: '10',
+    name: 'Julia Dillon',
+    image: getCoverImageUrl('creators/julia-dillon.jpeg'),
+    bio: 'Product strategy expert focused on retention and user engagement',
+    category: 'Product Management',
+    followerCount: 42000
+  },
+  {
+    id: '11',
+    name: 'Audrey Xu Leung',
+    image: getCoverImageUrl('creators/audrey-xu-leung.jpeg'),
+    bio: 'Analytics and experimentation expert at Amplitude',
+    category: 'Data Science',
+    followerCount: 38000
+  },
+  {
+    id: '12',
+    name: 'Eric Metelka',
+    image: getCoverImageUrl('creators/eric-metelka.jpeg'),
+    bio: 'Experimentation and product analytics expert',
+    category: 'Data Science',
+    followerCount: 32000
+  },
+  {
+    id: '13',
+    name: 'David George',
+    image: getCoverImageUrl('creators/david-george.jpeg'),
+    bio: 'Growth investor at Andreessen Horowitz (a16z)',
+    category: 'Finance',
+    followerCount: 120000
   }
 ];

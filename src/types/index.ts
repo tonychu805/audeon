@@ -7,10 +7,19 @@ export interface Creator {
   followerCount: number;
 }
 
+export interface Community {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  website: string;
+}
+
 export interface AudioTrack {
   track_id: number;
   title: string;
   url: string;
+  audioUrl: string;
   creator: string;
   community: string;
   category: string;
