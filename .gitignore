@@ -58,3 +58,15 @@ debug.log
 *.pid
 *.seed
 *.pid.lock
+
+# Large binary assets (use external storage/CDN)
+public/audio/
+*.mp3
+*.wav
+*.m4a
+public/images/creators/*.jpg
+public/images/creators/*.png
+public/images/creators/*.jpeg
+
+# Development scripts (one-time use)
+src/scripts/
