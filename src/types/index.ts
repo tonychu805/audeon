@@ -7,6 +7,12 @@ export interface Creator {
   followerCount: number;
 }
 
+export interface Category {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 export interface Community {
   id: string;
   name: string;
@@ -16,6 +22,7 @@ export interface Community {
 }
 
 export interface AudioTrack {
+  id: string;
   track_id: number;
   title: string;
   url: string;
@@ -28,6 +35,7 @@ export interface AudioTrack {
   releaseDate: string;
   full_content: string;
   read_time: string;
+  duration: string;
   main_image: {
     url: string;
     caption: string;

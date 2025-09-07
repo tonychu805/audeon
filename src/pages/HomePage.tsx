@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { SearchBar } from '../components/SearchBar';
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
-import { featuredCreators } from '../data/mockData';
+import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+import { Creator } from '../types';
 
 interface HomePageProps {
   onCreatorClick: (creatorId: string) => void;
@@ -13,6 +14,7 @@ interface HomePageProps {
 
 export const HomePage: React.FC<HomePageProps> = ({ onCreatorClick, onTrackClick }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [featuredCreators, setFeaturedCreators] = useState<Creator[]>([]);
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
@@ -20,11 +22,24 @@ export const HomePage: React.FC<HomePageProps> = ({ onCreatorClick, onTrackClick
 
   React.useEffect(() => {
     setTracks(audioTracks);
-  }, [setTracks]);
+  }, [setTracks, audioTracks]);
+
+  React.useEffect(() => {
+    const loadCreators = async () => {
+      try {
+        const creators = await creatorService.getAll();
+        setFeaturedCreators(creators.slice(0, 5));
+      } catch (error) {
+        console.error('Failed to load creators:', error);
+        setFeaturedCreators([]);
+      }
+    };
+    loadCreators();
+  }, []);
 
   const filteredTracks = audioTracks.filter(track =>
     track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    track.creator.name.toLowerCase().includes(searchQuery.toLowerCase())
+    track.creator.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {

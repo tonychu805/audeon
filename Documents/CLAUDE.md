@@ -149,4 +149,24 @@ Cut redundancy: Remove duplicate code, especially multiple “theme hooks,” ta
 
 #### Demand clear architecture: Modular TypeScript and a solid UI library: good! Untested or orphaned folders and services: trash them.
 
-#### Be direct and blunt: “This file is a mess—clean it up.” No wasted words, no sugarcoating—author gets precise, actionable feedback.
+#### Be direct and blunt: "This file is a mess—clean it up." No wasted words, no sugarcoating—author gets precise, actionable feedback.
+
+## Linear Integration Workflow
+
+**Issue Management Protocol:**
+- **Always check with user** before creating new Linear issues
+- **Ask permission**: "Should I create a Linear issue for [specific problem]?"
+- **Never create issues autonomously** - user decides what goes into Linear
+- **Reference existing issues** when working on tasks (e.g., "Working on AUD-11")
+- **Confirm completion** before marking issues as done in Linear
+
+**Bug Discovery Process:**
+1. **Identify the bug** during development/testing
+2. **Ask user**: "I found [issue description] - should this be a Linear issue?"
+3. **Wait for user approval** before creating
+4. **Focus on current task** unless user redirects to new issue
+
+**Task Handoff:**
+- When AUD-11 type tasks complete → "Ready to mark AUD-11 as Done in Linear?"
+- When new bugs found → "Should I create Linear issues for these 3 bugs?"
+- User controls Linear workflow, Claude executes technical work

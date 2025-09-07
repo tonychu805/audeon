@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { Creator, AudioTrack, Community } from '../types';
+import type { Creator, AudioTrack, Community, Category } from '../types';
 
 // Helper function to get Supabase storage URL
 export const getStorageUrl = (bucket: string, filename: string) => {
@@ -117,7 +117,8 @@ export const trackService = {
       .select(`
         *,
         creators:creator_id(name),
-        communities:community_id(name)
+        communities:community_id(name),
+        categories:category_id(id, name, icon)
       `)
       .order('created_at', { ascending: false });
     
@@ -127,18 +128,20 @@ export const trackService = {
     }
     
     return data?.map(track => ({
+      id: track.track_id.toString(),
       track_id: track.track_id,
       title: track.title,
       url: track.url || '',
       audioUrl: track.audio_url,
       creator: track.creators?.name || '',
       community: track.communities?.name || '',
-      category: track.category,
+      category: track.categories?.name || track.category || '',
       sub_category: track.sub_category || [],
       summary: track.summary || '',
       releaseDate: track.release_date || '',
       full_content: track.full_content || '',
       read_time: track.read_time || '',
+      duration: '0:00',
       main_image: {
         url: track.main_image_url || '',
         caption: track.main_image_caption || '',
@@ -157,7 +160,8 @@ export const trackService = {
       .select(`
         *,
         creators:creator_id(name),
-        communities:community_id(name)
+        communities:community_id(name),
+        categories:category_id(id, name, icon)
       `)
       .eq('track_id', trackId)
       .single();
@@ -170,6 +174,7 @@ export const trackService = {
     if (!data) return null;
     
     return {
+      id: data.track_id.toString(),
       track_id: data.track_id,
       title: data.title,
       url: data.url || '',
@@ -182,6 +187,7 @@ export const trackService = {
       releaseDate: data.release_date || '',
       full_content: data.full_content || '',
       read_time: data.read_time || '',
+      duration: '0:00',
       main_image: {
         url: data.main_image_url || '',
         caption: data.main_image_caption || '',
@@ -200,7 +206,8 @@ export const trackService = {
       .select(`
         *,
         creators:creator_id(name),
-        communities:community_id(name)
+        communities:community_id(name),
+        categories:category_id(id, name, icon)
       `)
       .eq('creators.name', creatorName)
       .order('created_at', { ascending: false });
@@ -211,18 +218,20 @@ export const trackService = {
     }
     
     return data?.map(track => ({
+      id: track.track_id.toString(),
       track_id: track.track_id,
       title: track.title,
       url: track.url || '',
       audioUrl: track.audio_url,
       creator: track.creators?.name || '',
       community: track.communities?.name || '',
-      category: track.category,
+      category: track.categories?.name || track.category || '',
       sub_category: track.sub_category || [],
       summary: track.summary || '',
       releaseDate: track.release_date || '',
       full_content: track.full_content || '',
       read_time: track.read_time || '',
+      duration: '0:00',
       main_image: {
         url: track.main_image_url || '',
         caption: track.main_image_caption || '',
@@ -241,7 +250,8 @@ export const trackService = {
       .select(`
         *,
         creators:creator_id(name),
-        communities:community_id(name)
+        communities:community_id(name),
+        categories:category_id(id, name, icon)
       `)
       .eq('category', category)
       .order('created_at', { ascending: false });
@@ -252,18 +262,20 @@ export const trackService = {
     }
     
     return data?.map(track => ({
+      id: track.track_id.toString(),
       track_id: track.track_id,
       title: track.title,
       url: track.url || '',
       audioUrl: track.audio_url,
       creator: track.creators?.name || '',
       community: track.communities?.name || '',
-      category: track.category,
+      category: track.categories?.name || track.category || '',
       sub_category: track.sub_category || [],
       summary: track.summary || '',
       releaseDate: track.release_date || '',
       full_content: track.full_content || '',
       read_time: track.read_time || '',
+      duration: '0:00',
       main_image: {
         url: track.main_image_url || '',
         caption: track.main_image_caption || '',
@@ -274,5 +286,37 @@ export const trackService = {
       gender: track.gender || '',
       audio_config: track.audio_config || {}
     })) || [];
+  }
+};
+
+// Categories
+export const categoryService = {
+  async getAll(): Promise<Category[]> {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name');
+    
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+    
+    return data || [];
+  },
+
+  async getById(id: string): Promise<Category | null> {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching category:', error);
+      return null;
+    }
+    
+    return data;
   }
 };
