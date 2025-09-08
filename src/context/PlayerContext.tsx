@@ -10,6 +10,8 @@ interface PlayerContextType extends PlayerState {
   toggleSaved: (trackId: string) => void;
   setTracks: (tracks: AudioTrack[]) => void;
   tracks: AudioTrack[];
+  playbackSpeed: number;
+  setPlaybackSpeed: (speed: number) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -20,9 +22,11 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [isExpanded, setIsExpanded] = useState(false);
   const [savedTracks, setSavedTracks] = useState<string[]>([]);
   const [tracks, setTracks] = useState<AudioTrack[]>([]);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const playTrack = (track: AudioTrack) => {
+    console.log('Playing track:', track.title, 'Audio URL:', track.audioUrl);
     setCurrentTrack(track);
     setIsPlaying(true);
   };
@@ -60,12 +64,21 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.play();
+        audioRef.current.play().catch(error => {
+          console.error('Audio play failed:', error);
+          setIsPlaying(false);
+        });
       } else {
         audioRef.current.pause();
       }
     }
   }, [isPlaying, currentTrack]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackSpeed;
+    }
+  }, [playbackSpeed]);
 
   return (
     <PlayerContext.Provider value={{
@@ -80,14 +93,23 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       previousTrack,
       toggleExpanded,
       toggleSaved,
-      setTracks
+      setTracks,
+      playbackSpeed,
+      setPlaybackSpeed
     }}>
       {children}
-      {currentTrack && (
+      {currentTrack && currentTrack.audioUrl && (
         <audio
           ref={audioRef}
           src={currentTrack.audioUrl}
           onEnded={nextTrack}
+          onError={(e) => {
+            console.error('Audio load error:', e, 'for track:', currentTrack.title);
+            setIsPlaying(false);
+          }}
+          onLoadStart={() => {
+            console.log('Loading audio:', currentTrack.title, currentTrack.audioUrl);
+          }}
         />
       )}
     </PlayerContext.Provider>

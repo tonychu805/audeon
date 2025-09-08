@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Heart, X } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Heart, X, Settings } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 
 export const AudioPlayer: React.FC = () => {
@@ -12,12 +12,15 @@ export const AudioPlayer: React.FC = () => {
     nextTrack, 
     previousTrack, 
     toggleExpanded,
-    toggleSaved
+    toggleSaved,
+    playbackSpeed,
+    setPlaybackSpeed
   } = usePlayer();
   
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [showSpeedControls, setShowSpeedControls] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
   useEffect(() => {
@@ -47,6 +50,18 @@ export const AudioPlayer: React.FC = () => {
       };
     }
   }, [currentTrack, isDragging]);
+
+  // Close speed controls when clicking elsewhere
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showSpeedControls) {
+        setShowSpeedControls(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showSpeedControls]);
   
   const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
@@ -91,14 +106,14 @@ export const AudioPlayer: React.FC = () => {
 
         <div className="flex-1 flex flex-col items-center justify-center px-8 pb-8">
           <img 
-            src={currentTrack.coverImage} 
-            alt={currentTrack.creator.name}
+            src={currentTrack.main_image.url} 
+            alt={currentTrack.creator}
             className="w-64 h-64 rounded-2xl object-cover mb-8 shadow-2xl"
           />
           
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold mb-2">{currentTrack.title}</h1>
-            <p className="text-lg text-gray-300">{currentTrack.creator.name}</p>
+            <p className="text-lg text-gray-300">{currentTrack.creator}</p>
           </div>
           
           {/* Progress Bar */}
@@ -155,7 +170,38 @@ export const AudioPlayer: React.FC = () => {
               <SkipForward className="w-8 h-8" />
             </button>
             
-            <div className="w-6" />
+            {/* Speed Controls for Expanded View */}
+            <div className="relative">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSpeedControls(!showSpeedControls);
+                }}
+                className="p-3 text-white/60 hover:text-white transition-colors text-sm font-medium"
+              >
+                {playbackSpeed}x
+              </button>
+              
+              {showSpeedControls && (
+                <div className="absolute bottom-full mb-2 right-0 bg-gray-800 rounded-lg shadow-lg border border-gray-600 py-2 min-w-[80px]">
+                  {[0.5, 0.75, 1, 1.25, 1.5, 2].map(speed => (
+                    <button
+                      key={speed}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPlaybackSpeed(speed);
+                        setShowSpeedControls(false);
+                      }}
+                      className={`block w-full px-3 py-2 text-left text-sm hover:bg-gray-700 transition-colors ${
+                        speed === playbackSpeed ? 'text-purple-400 bg-gray-700' : 'text-gray-300'
+                      }`}
+                    >
+                      {speed}x
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -163,24 +209,57 @@ export const AudioPlayer: React.FC = () => {
   }
 
   return (
-    <div 
-      onClick={toggleExpanded}
-      className="fixed bottom-16 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40 cursor-pointer hover:bg-gray-800 transition-colors"
-    >
-      <div className="flex items-center justify-between p-4">
+    <div className="fixed bottom-16 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40">
+      <div 
+        onClick={toggleExpanded}
+        className="flex items-center justify-between p-4 pb-3 cursor-pointer hover:bg-gray-800 transition-colors"
+      >
         <div className="flex items-center space-x-3">
           <img 
-            src={currentTrack.coverImage} 
-            alt={currentTrack.creator.name}
+            src={currentTrack.main_image.url} 
+            alt={currentTrack.creator}
             className="w-12 h-12 rounded-lg object-cover"
           />
           <div>
             <h3 className="font-semibold text-white text-sm line-clamp-1">{currentTrack.title}</h3>
-            <p className="text-gray-300 text-sm">{currentTrack.creator.name}</p>
+            <p className="text-gray-300 text-sm">{currentTrack.creator}</p>
           </div>
         </div>
         
         <div className="flex items-center space-x-2">
+          {/* Speed Controls */}
+          <div className="relative">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSpeedControls(!showSpeedControls);
+              }}
+              className="p-2 text-gray-400 hover:text-white transition-colors text-xs font-medium"
+            >
+              {playbackSpeed}x
+            </button>
+            
+            {showSpeedControls && (
+              <div className="absolute bottom-full mb-2 right-0 bg-gray-800 rounded-lg shadow-lg border border-gray-600 py-2 min-w-[80px]">
+                {[0.5, 0.75, 1, 1.25, 1.5, 2].map(speed => (
+                  <button
+                    key={speed}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPlaybackSpeed(speed);
+                      setShowSpeedControls(false);
+                    }}
+                    className={`block w-full px-3 py-2 text-left text-sm hover:bg-gray-700 transition-colors ${
+                      speed === playbackSpeed ? 'text-purple-400 bg-gray-700' : 'text-gray-300'
+                    }`}
+                  >
+                    {speed}x
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
           <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -227,11 +306,22 @@ export const AudioPlayer: React.FC = () => {
         </div>
       </div>
       
-      {/* Mini Progress Bar - Made highly visible for debugging */}
-      <div className="h-3 bg-red-500 w-full border-t-2 border-yellow-400">
-        <div 
-          className="h-full bg-blue-500 transition-all duration-300"
-          style={{ width: `${(currentTime / duration) * 100}%` }}
+      {/* Interactive Progress Bar at Bottom */}
+      <div className="px-4 pb-1">
+        <input
+          type="range"
+          min="0"
+          max={duration || 0}
+          value={currentTime}
+          onChange={handleProgressChange}
+          onMouseDown={handleProgressMouseDown}
+          onMouseUp={handleProgressMouseUp}
+          className="w-full h-1.5 bg-gray-700 rounded-none appearance-none cursor-pointer slider"
+          style={{
+            background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${(currentTime / duration) * 100}%, #374151 ${(currentTime / duration) * 100}%, #374151 100%)`,
+            WebkitAppearance: 'none',
+            outline: 'none'
+          }}
         />
       </div>
     </div>

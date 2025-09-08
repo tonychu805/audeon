@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { CreatorCard } from '../components/CreatorCard';
-import { categories } from '../data/categories';
-import { creators } from '../data/creators';
+import { categoryService, creatorService } from '../services/database';
+import { Category, Creator } from '../types';
 
 interface ExplorePageProps {
   onCreatorClick: (creatorId: string) => void;
@@ -10,6 +10,29 @@ interface ExplorePageProps {
 
 export const ExplorePage: React.FC<ExplorePageProps> = ({ onCreatorClick }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [creators, setCreators] = useState<Creator[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [categoriesData, creatorsData] = await Promise.all([
+          categoryService.getAll(),
+          creatorService.getAll()
+        ]);
+        setCategories(categoriesData);
+        setCreators(creatorsData);
+      } catch (error) {
+        console.error('Failed to load explore data:', error);
+        setCategories([]);
+        setCreators([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   const filteredCreators = selectedCategory 
     ? creators.filter(creator => {
@@ -18,7 +41,18 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({ onCreatorClick }) => {
         const selectedCat = selectedCategory.toLowerCase();
         return creatorCategory === selectedCat || creator.category.toLowerCase() === selectedCat;
       })
-    : [];
+    : creators;
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading explore content...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (selectedCategory) {
     return (

@@ -40,22 +40,22 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
     >
       <div className="flex items-start space-x-4 mb-3">
         <img 
-          src={track.coverImage} 
+          src={track.main_image.url} 
           alt={track.title}
           className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
           onError={(e) => {
-            console.error('Image load error for:', track.title, track.coverImage);
-            // Fallback to creator image
-            e.currentTarget.src = track.creator.image;
+            console.error('Image load error for:', track.title, track.main_image.url);
+            // Fallback to a default image or keep current src
+            e.currentTarget.src = 'https://via.placeholder.com/80?text=Audio';
           }}
           onLoad={() => {
-            console.log('Image loaded successfully for:', track.title, track.coverImage);
+            console.log('Image loaded successfully for:', track.title, track.main_image.url);
           }}
         />
         <div className="flex-1">
           <h3 className="font-bold text-gray-900 text-lg mb-1 line-clamp-2">{track.title}</h3>
-          <p className="text-gray-600 font-medium mb-1">{track.creator.name}</p>
-          <p className="text-gray-500 text-sm line-clamp-2 mb-2">{track.description}</p>
+          <p className="text-gray-600 font-medium mb-1">{track.creator}</p>
+          <p className="text-gray-500 text-sm line-clamp-2 mb-2">{track.summary}</p>
           <div className="flex items-center space-x-4 text-xs text-gray-500">
             <div className="flex items-center space-x-1">
               <Calendar className="w-3 h-3" />

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Users } from 'lucide-react';
 import { TrackCard } from '../components/TrackCard';
-import { creators } from '../data/creators';
+import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+import { Creator } from '../types';
 
 interface CreatorProfilePageProps {
   creatorId: string;
@@ -13,44 +14,59 @@ interface CreatorProfilePageProps {
 
 export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorId, onBack, onTrackClick }) => {
   const { setTracks } = usePlayer();
-  const { tracks: audioTracks, isLoading } = useAudioTracks();
-  const creator = creators.find(c => c.id === creatorId);
-  const creatorTracks = audioTracks.filter(track => track.creator.id === creatorId);
+  const { tracks: audioTracks, isLoading: tracksLoading } = useAudioTracks();
+  const [creator, setCreator] = useState<Creator | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const creatorTracks = audioTracks.filter(track => track.creator === creator?.name);
+
+  useEffect(() => {
+    const loadCreator = async () => {
+      try {
+        const creators = await creatorService.getAll();
+        const foundCreator = creators.find(c => c.id === creatorId);
+        setCreator(foundCreator || null);
+      } catch (error) {
+        console.error('Failed to load creator:', error);
+        setCreator(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadCreator();
+  }, [creatorId]);
 
   React.useEffect(() => {
     setTracks(creatorTracks);
   }, [creatorTracks, setTracks]);
 
+  if (isLoading || tracksLoading) {
+    return (
+      <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading creator profile...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!creator) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">Creator not found</p>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center space-x-4">
+      <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400">Creator not found</p>
           <button 
             onClick={onBack}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
           >
-            <ArrowLeft className="w-6 h-6" />
+            Go Back
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Creator Profile</h1>
-        </div>
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-            <p className="text-gray-500">Loading creator tracks...</p>
-          </div>
         </div>
       </div>
     );
   }
-
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">

@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "archive/Technical_Implementation/Audeon_Technical_Implementation_Plan_v1.1.md",
+                "file": "guides/code-quality-checklist.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Audeon_Technical_Implementation_Plan_v1.1"
+              "title": "code-quality-checklist"
             }
           }
         ]
@@ -169,18 +169,18 @@
   },
   "active": "88cec8a0767ba6a4",
   "lastOpenFiles": [
+    "guides/deployment-guide.md",
+    "archive/Technical_Implementation/Audeon_Technical_Implementation_Plan_v1.1.md",
     "architecture/migration-history.md",
     "guides/code-quality-checklist.md",
     "current/CLAUDE.md",
     "README.md",
-    "archive/Technical_Implementation/Audeon_Technical_Implementation_Plan_v1.1.md",
     "archive/Technical_Implementation/Audeon_Technical_Implementation_Plan_v1.0.md",
     "archive/Technical_Implementation",
     "archive/MVP_Code_Review.md",
     "current/claude-instructions.md",
     "sessions/2025-09-08-database-integration.md",
     "current/development-workflow.md",
-    "guides/deployment-guide.md",
     "current/database-schema.md",
     "assets/screenshots",
     "assets/diagrams",
