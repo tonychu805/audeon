@@ -13,6 +13,7 @@
 
 ### `/guides/` - How-To Documentation  
 - **[deployment-guide.md](guides/deployment-guide.md)** - Netlify deployment and environment setup
+- **[code-quality-checklist.md](guides/code-quality-checklist.md)** - Pre-commit quality standards and review criteria
 
 ### `/sessions/` - Session Tracking
 - **[2025-09-08-database-integration.md](sessions/2025-09-08-database-integration.md)** - Database migration completion status
@@ -21,8 +22,8 @@
 - **MVP_Code_Review.md** - Initial code review from MVP phase
 - **Technical_Implementation/** - Early technical implementation notes
 
-### `/architecture/` - Technical Architecture (Future)
-- System overviews and component hierarchies
+### `/architecture/` - Technical Architecture
+- **[migration-history.md](architecture/migration-history.md)** - Project evolution from Lovable to React/Supabase
 
 ### `/assets/` - Visual Resources (Future)
 - Screenshots, diagrams, and visual documentation
@@ -49,11 +50,13 @@ All documentation includes version headers:
 - [Start Here: Development Workflow](current/development-workflow.md)
 - [Database Schema Reference](current/database-schema.md)
 - [Claude Instructions](current/CLAUDE.md)
+- [Code Quality Checklist](guides/code-quality-checklist.md)
 
 ### Deployment
 - [Deployment Guide](guides/deployment-guide.md)
 
-### Current Session
+### Architecture & History
+- [Migration History](architecture/migration-history.md)
 - [Latest Session Status](sessions/2025-09-08-database-integration.md)
 
 ---

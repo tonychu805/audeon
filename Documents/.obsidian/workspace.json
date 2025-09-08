@@ -11,10 +11,14 @@
             "id": "88cec8a0767ba6a4",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "archive/Technical_Implementation/Audeon_Technical_Implementation_Plan_v1.1.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Audeon_Technical_Implementation_Plan_v1.1"
             }
           }
         ]
@@ -163,8 +167,10 @@
       "bases:Create new base": false
     }
   },
-  "active": "e9ff16661f53ec60",
+  "active": "88cec8a0767ba6a4",
   "lastOpenFiles": [
+    "architecture/migration-history.md",
+    "guides/code-quality-checklist.md",
     "current/CLAUDE.md",
     "README.md",
     "archive/Technical_Implementation/Audeon_Technical_Implementation_Plan_v1.1.md",

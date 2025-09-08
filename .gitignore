@@ -64,9 +64,7 @@ public/audio/
 *.mp3
 *.wav
 *.m4a
-public/images/creators/*.jpg
-public/images/creators/*.png
-public/images/creators/*.jpeg
+public/images/
 
 # Development scripts (one-time use)
 src/scripts/
