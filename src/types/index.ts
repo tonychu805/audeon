@@ -1,3 +1,9 @@
+export interface CreatorLink {
+  name: string;
+  url: string;
+  platform: string;
+}
+
 export interface Creator {
   id: string;
   name: string;
@@ -5,6 +11,7 @@ export interface Creator {
   bio: string;
   category: string;
   followerCount: number;
+  socialLinks?: CreatorLink[];
 }
 
 export interface Category {

@@ -1,16 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Users } from 'lucide-react';
+import { HugeiconsIcon } from '@hugeicons/react';
+import { 
+  LinkedinIcon,
+  TwitterIcon, 
+  MediumIcon,
+  Mail01Icon,
+  GlobeIcon
+} from '@hugeicons/core-free-icons';
 import { TrackCard } from '../components/TrackCard';
 import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
-import { Creator } from '../types';
+import { Creator, CreatorLink } from '../types';
 
 interface CreatorProfilePageProps {
   creatorId: string;
   onBack: () => void;
   onTrackClick: (trackId: string) => void;
 }
+
+// Helper function to get platform icon
+const getPlatformIcon = (platform: string) => {
+  const iconProps = { size: 16, color: "currentColor", className: "text-gray-600" };
+  
+  switch (platform.toLowerCase()) {
+    case 'linkedin':
+      return <HugeiconsIcon icon={LinkedinIcon} {...iconProps} />;
+    case 'twitter':
+      return <HugeiconsIcon icon={TwitterIcon} {...iconProps} />;
+    case 'medium':
+      return <HugeiconsIcon icon={MediumIcon} {...iconProps} />;
+    case 'substack':
+    case 'beehiiv':
+      return <HugeiconsIcon icon={Mail01Icon} {...iconProps} />; // Newsletter icon
+    case 'github':
+      return '⚡'; // Keep emoji for now, can add GitHub icon later
+    case 'website':
+    default:
+      return <HugeiconsIcon icon={GlobeIcon} {...iconProps} />;
+  }
+};
 
 export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorId, onBack, onTrackClick }) => {
   const { setTracks } = usePlayer();
@@ -81,7 +111,7 @@ export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorI
 
       {/* Creator Header */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
-        <div className="flex items-center space-x-4 mb-4">
+        <div className="flex items-center space-x-4">
           <img 
             src={creator.image} 
             alt={creator.name}
@@ -89,13 +119,38 @@ export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorI
           />
           <div>
             <h2 className="text-2xl font-bold">{creator.name}</h2>
-            <p className="text-purple-100 mb-2">{creator.bio}</p>
             <div className="flex items-center space-x-2 text-sm">
               <Users className="w-4 h-4" />
               <span>{creator.followerCount.toLocaleString()} followers</span>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Creator Description - Outside purple block */}
+      <div className="bg-white rounded-xl p-6 border">
+        <p className="text-gray-700 leading-relaxed">{creator.bio}</p>
+        
+        {/* Social Links */}
+        {creator.socialLinks && creator.socialLinks.length > 0 && (
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-semibold text-gray-900 mb-3">Connect with {creator.name}</h4>
+            <div className="flex flex-wrap gap-3">
+              {creator.socialLinks.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={link.name}
+                  className="flex items-center justify-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
+                >
+                  {getPlatformIcon(link.platform)}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Creator's Tracks */}

@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { Creator, AudioTrack, Community, Category } from '../types';
+import type { Creator, AudioTrack, Community, Category, CreatorLink } from '../types';
 
 // Helper function to get Supabase storage URL
 export const getStorageUrl = (bucket: string, filename: string) => {
@@ -58,7 +58,8 @@ export const creatorService = {
       image: creator.image || '',
       bio: creator.bio || '',
       category: creator.category,
-      followerCount: creator.follower_count || 0
+      followerCount: creator.follower_count || 0,
+      socialLinks: creator.social_links || []
     })) || [];
   },
 
@@ -82,7 +83,8 @@ export const creatorService = {
       image: data.image || '',
       bio: data.bio || '',
       category: data.category,
-      followerCount: data.follower_count || 0
+      followerCount: data.follower_count || 0,
+      socialLinks: data.social_links || []
     };
   },
 
@@ -104,7 +106,8 @@ export const creatorService = {
       image: creator.image || '',
       bio: creator.bio || '',
       category: creator.category,
-      followerCount: creator.follower_count || 0
+      followerCount: creator.follower_count || 0,
+      socialLinks: creator.social_links || []
     })) || [];
   }
 };
