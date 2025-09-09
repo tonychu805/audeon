@@ -68,3 +68,13 @@ public/images/
 
 # Development scripts (one-time use)
 src/scripts/
+
+# Serena cache (keep memories and config)
+.serena/cache/
+
+# Development documentation artifacts
+Documents/analysis/
+Documents/sessions/
+Documents/current/
+Documents/archive/
+Documents/.obsidian/
