@@ -36,10 +36,8 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({ onCreatorClick }) => {
 
   const filteredCreators = selectedCategory 
     ? creators.filter(creator => {
-        // Handle category matching more precisely
-        const creatorCategory = creator.category.toLowerCase().replace(/\s+/g, '-');
-        const selectedCat = selectedCategory.toLowerCase();
-        return creatorCategory === selectedCat || creator.category.toLowerCase() === selectedCat;
+        const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
+        return selectedCategoryData && creator.category.toLowerCase() === selectedCategoryData.name.toLowerCase();
       })
     : creators;
 
@@ -102,7 +100,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({ onCreatorClick }) => {
             <div className="text-3xl mb-2">{category.icon}</div>
             <h3 className="font-semibold text-gray-900">{category.name}</h3>
             <p className="text-sm text-gray-500 mt-1">
-              {creators.filter(c => c.category.toLowerCase() === category.id.toLowerCase()).length} creators
+              {creators.filter(c => c.category.toLowerCase() === category.name.toLowerCase()).length} creators
             </p>
           </button>
         ))}
