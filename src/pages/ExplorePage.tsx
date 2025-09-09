@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { CreatorCard } from '../components/CreatorCard';
 import { categoryService, creatorService } from '../services/database';
 import { Category, Creator } from '../types';
 
-interface ExplorePageProps {
-  onCreatorClick: (creatorId: string) => void;
-}
-
-export const ExplorePage: React.FC<ExplorePageProps> = ({ onCreatorClick }) => {
+export const ExplorePage: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
@@ -72,7 +70,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({ onCreatorClick }) => {
             <CreatorCard 
               key={creator.id} 
               creator={creator} 
-              onClick={() => onCreatorClick(creator.id)}
+              onClick={() => navigate(`/creators/${creator.id}`)}
             />
           ))}
         </div>

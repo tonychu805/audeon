@@ -1,13 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrackCard } from '../components/TrackCard';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 
-interface LibraryPageProps {
-  onTrackClick: (trackId: string) => void;
-}
-
-export const LibraryPage: React.FC<LibraryPageProps> = ({ onTrackClick }) => {
+export const LibraryPage: React.FC = () => {
+  const navigate = useNavigate();
   const { savedTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
 
@@ -38,7 +36,7 @@ export const LibraryPage: React.FC<LibraryPageProps> = ({ onTrackClick }) => {
               key={track.id} 
               track={track} 
               showSaveButton 
-              onClick={() => onTrackClick(track.id)}
+              onClick={() => navigate(`/tracks/${track.id}`)}
             />
           ))}
         </div>

@@ -1,48 +1,45 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users } from 'lucide-react';
-import { HugeiconsIcon } from '@hugeicons/react';
 import { 
-  LinkedinIcon,
-  TwitterIcon, 
-  MediumIcon,
-  Mail01Icon,
-  GlobeIcon
-} from '@hugeicons/core-free-icons';
+  FaLinkedin,
+  FaTwitter, 
+  FaMedium,
+  FaGithub,
+  FaGlobe,
+  FaNewspaper
+} from 'react-icons/fa';
 import { TrackCard } from '../components/TrackCard';
 import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 import { Creator, CreatorLink } from '../types';
 
-interface CreatorProfilePageProps {
-  creatorId: string;
-  onBack: () => void;
-  onTrackClick: (trackId: string) => void;
-}
-
 // Helper function to get platform icon
 const getPlatformIcon = (platform: string) => {
-  const iconProps = { size: 16, color: "currentColor", className: "text-gray-600" };
+  const iconProps = { size: 16, className: "text-gray-600" };
   
   switch (platform.toLowerCase()) {
     case 'linkedin':
-      return <HugeiconsIcon icon={LinkedinIcon} {...iconProps} />;
+      return <FaLinkedin {...iconProps} className="text-blue-600" />;
     case 'twitter':
-      return <HugeiconsIcon icon={TwitterIcon} {...iconProps} />;
+      return <FaTwitter {...iconProps} className="text-sky-500" />;
     case 'medium':
-      return <HugeiconsIcon icon={MediumIcon} {...iconProps} />;
+      return <FaMedium {...iconProps} className="text-gray-900" />;
     case 'substack':
     case 'beehiiv':
-      return <HugeiconsIcon icon={Mail01Icon} {...iconProps} />; // Newsletter icon
+      return <FaNewspaper {...iconProps} className="text-orange-500" />; // Newsletter icon
     case 'github':
-      return '⚡'; // Keep emoji for now, can add GitHub icon later
+      return <FaGithub {...iconProps} className="text-gray-900" />;
     case 'website':
     default:
-      return <HugeiconsIcon icon={GlobeIcon} {...iconProps} />;
+      return <FaGlobe {...iconProps} className="text-gray-600" />;
   }
 };
 
-export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorId, onBack, onTrackClick }) => {
+export const CreatorProfilePage: React.FC = () => {
+  const { creatorId } = useParams<{ creatorId: string }>();
+  const navigate = useNavigate();
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading: tracksLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
@@ -52,6 +49,8 @@ export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorI
 
   useEffect(() => {
     const loadCreator = async () => {
+      if (!creatorId) return;
+      
       try {
         const creators = await creatorService.getAll();
         const foundCreator = creators.find(c => c.id === creatorId);
@@ -87,7 +86,7 @@ export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorI
         <div className="text-center">
           <p className="text-gray-400">Creator not found</p>
           <button 
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
           >
             Go Back
@@ -101,7 +100,7 @@ export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorI
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
         <button 
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -166,7 +165,7 @@ export const CreatorProfilePage: React.FC<CreatorProfilePageProps> = ({ creatorI
                 key={track.id} 
                 track={track} 
                 showSaveButton 
-                onClick={() => onTrackClick(track.id)}
+                onClick={() => navigate(`/tracks/${track.id}`)}
               />
             ))}
           </div>

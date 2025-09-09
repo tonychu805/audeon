@@ -1,0 +1,35 @@
+import React from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { Navigation } from './Navigation';
+import { AudioPlayer } from './AudioPlayer';
+
+export const Layout: React.FC = () => {
+  const location = useLocation();
+  
+  // Extract active tab from current pathname
+  const getActiveTab = (pathname: string): string => {
+    const path = pathname.split('/')[1];
+    if (['home', 'explore', 'library'].includes(path)) {
+      return path;
+    }
+    // For creator and track pages, determine parent tab
+    if (pathname.startsWith('/creators') || pathname.startsWith('/tracks')) {
+      // Default to home for now, could be more sophisticated
+      return 'home';
+    }
+    return 'home';
+  };
+
+  const activeTab = getActiveTab(location.pathname);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <main className="pb-32 px-4 pt-6">
+        <Outlet />
+      </main>
+      
+      <AudioPlayer />
+      <Navigation activeTab={activeTab} />
+    </div>
+  );
+};

@@ -1,24 +1,47 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, Heart, Calendar, User, Share, Download, MoreHorizontal } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+import { creatorService } from '../services/database';
+import { Creator } from '../types';
 
-interface TrackDetailPageProps {
-  trackId: string;
-  onBack: () => void;
-}
-
-export const TrackDetailPage: React.FC<TrackDetailPageProps> = ({ trackId, onBack }) => {
+export const TrackDetailPage: React.FC = () => {
+  const { trackId } = useParams<{ trackId: string }>();
+  const navigate = useNavigate();
   const { currentTrack, isPlaying, playTrack, togglePlayPause, savedTracks, toggleSaved } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
+  const [creator, setCreator] = useState<Creator | null>(null);
+  const [creatorLoading, setCreatorLoading] = useState(false);
   const track = audioTracks.find(t => t.id === trackId);
+
+  // Load creator data when track changes
+  useEffect(() => {
+    const loadCreator = async () => {
+      if (!track?.creator) return;
+      
+      setCreatorLoading(true);
+      try {
+        const creators = await creatorService.getAll();
+        const foundCreator = creators.find(c => c.name === track.creator);
+        setCreator(foundCreator || null);
+      } catch (error) {
+        console.error('Failed to load creator:', error);
+        setCreator(null);
+      } finally {
+        setCreatorLoading(false);
+      }
+    };
+    
+    loadCreator();
+  }, [track?.creator]);
 
   if (isLoading) {
     return (
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <button 
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -67,7 +90,7 @@ export const TrackDetailPage: React.FC<TrackDetailPageProps> = ({ trackId, onBac
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button 
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           <ArrowLeft className="w-6 h-6" />
@@ -78,7 +101,7 @@ export const TrackDetailPage: React.FC<TrackDetailPageProps> = ({ trackId, onBac
       <div className="space-y-6">
         <div className="relative">
           <img 
-            src={track.coverImage} 
+            src={track.main_image?.url || '/default-cover.jpg'} 
             alt={track.title}
             className="w-full h-64 object-cover rounded-2xl"
           />
@@ -88,13 +111,17 @@ export const TrackDetailPage: React.FC<TrackDetailPageProps> = ({ trackId, onBac
           <h1 className="text-3xl font-bold text-gray-900">{track.title}</h1>
           
           <div className="flex items-center space-x-3">
-            <img 
-              src={track.creator.image} 
-              alt={track.creator.name}
-              className="w-12 h-12 rounded-full object-cover"
-            />
+            {creator ? (
+              <img 
+                src={creator.image} 
+                alt={creator.name}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gray-300 animate-pulse"></div>
+            )}
             <div>
-              <p className="font-semibold text-gray-900">{track.creator.name}</p>
+              <p className="font-semibold text-gray-900">{track.creator}</p>
               <div className="flex items-center space-x-4 text-sm text-gray-500">
                 <div className="flex items-center space-x-1">
                   <Calendar className="w-4 h-4" />
@@ -145,7 +172,7 @@ export const TrackDetailPage: React.FC<TrackDetailPageProps> = ({ trackId, onBac
       {/* Description */}
       <div className="bg-white rounded-xl p-6 border">
         <h2 className="text-xl font-bold text-gray-900 mb-4">About this episode</h2>
-        <p className="text-gray-700 leading-relaxed">{track.description}</p>
+        <p className="text-gray-700 leading-relaxed">{track.summary || track.full_content}</p>
         
         <div className="mt-6 pt-6 border-t">
           <div className="flex items-center space-x-3 mb-4">
@@ -153,15 +180,27 @@ export const TrackDetailPage: React.FC<TrackDetailPageProps> = ({ trackId, onBac
             <span className="font-semibold text-gray-900">Creator</span>
           </div>
           <div className="flex items-center space-x-3">
-            <img 
-              src={track.creator.image} 
-              alt={track.creator.name}
-              className="w-16 h-16 rounded-full object-cover"
-            />
+            {creatorLoading ? (
+              <div className="w-16 h-16 rounded-full bg-gray-300 animate-pulse"></div>
+            ) : creator ? (
+              <img 
+                src={creator.image} 
+                alt={creator.name}
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                <User className="w-8 h-8 text-gray-400" />
+              </div>
+            )}
             <div>
-              <h3 className="font-semibold text-gray-900">{track.creator.name}</h3>
-              <p className="text-gray-600 text-sm">{track.creator.bio}</p>
-              <p className="text-gray-500 text-xs mt-1">{track.creator.followerCount.toLocaleString()} followers</p>
+              <h3 className="font-semibold text-gray-900">{track.creator}</h3>
+              {creator && (
+                <>
+                  <p className="text-gray-600 text-sm">{creator.bio}</p>
+                  <p className="text-gray-500 text-xs mt-1">{creator.followerCount.toLocaleString()} followers</p>
+                </>
+              )}
             </div>
           </div>
         </div>

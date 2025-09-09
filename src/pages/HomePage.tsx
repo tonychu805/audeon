@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '../components/SearchBar';
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
@@ -7,12 +8,8 @@ import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 import { Creator } from '../types';
 
-interface HomePageProps {
-  onCreatorClick: (creatorId: string) => void;
-  onTrackClick: (trackId: string) => void;
-}
-
-export const HomePage: React.FC<HomePageProps> = ({ onCreatorClick, onTrackClick }) => {
+export const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [featuredCreators, setFeaturedCreators] = useState<Creator[]>([]);
   const { setTracks } = usePlayer();
@@ -70,14 +67,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onCreatorClick, onTrackClick
               key={track.id} 
               track={track} 
               showSaveButton 
-              onClick={() => onTrackClick(track.id)}
+              onClick={() => navigate(`/tracks/${track.id}`)}
             />
           )) : featuredTracks.map(track => (
             <TrackCard 
               key={track.id} 
               track={track} 
               showSaveButton 
-              onClick={() => onTrackClick(track.id)}
+              onClick={() => navigate(`/tracks/${track.id}`)}
             />
           ))}
         </div>
@@ -91,7 +88,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onCreatorClick, onTrackClick
             <CreatorCard 
               key={creator.id} 
               creator={creator} 
-              onClick={() => onCreatorClick(creator.id)}
+              onClick={() => navigate(`/creators/${creator.id}`)}
             />
           ))}
         </div>
