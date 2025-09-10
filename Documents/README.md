@@ -1,63 +1,53 @@
 # Audeon Documentation
 
 **Project:** Audeon - Audio Streaming Platform  
-**Last Updated:** 2025-09-08  
-**Organization Version:** 2.0  
+**Last Updated:** 2025-09-10  
+**Organization Version:** 3.0  
 
 ## 📁 Documentation Structure
 
-### `/current/` - Latest Working Versions
-- **[CLAUDE.md](current/CLAUDE.md)** - Claude Code project instructions and persona
-- **[database-schema.md](current/database-schema.md)** - Current database structure and relationships
-- **[development-workflow.md](current/development-workflow.md)** - Development standards and processes
+### 🚀 **Current Projects** - Active Development & Status
+- **[2025-09-09-session-summary.md](Current Projects/2025-09-09-session-summary.md)** - Latest development session summary
+- **[2025-09-09-project-status.md](Current Projects/2025-09-09-project-status.md)** - Current project health and status
+- **[2025-09-09-react-router-implementation.md](Current Projects/2025-09-09-react-router-implementation.md)** - React Router technical documentation
+- **[2025-09-08-database-integration.md](Current Projects/2025-09-08-database-integration.md)** - Database integration session
+- **[Audeon_Technical_Implementation_Plan_v1.1.md](Current Projects/Audeon_Technical_Implementation_Plan_v1.1.md)** - Latest technical implementation plan
+- **[Audeon_Technical_Implementation_Plan_v1.0.md](Current Projects/Audeon_Technical_Implementation_Plan_v1.0.md)** - Original technical implementation plan
 
-### `/guides/` - How-To Documentation  
-- **[deployment-guide.md](guides/deployment-guide.md)** - Netlify deployment and environment setup
-- **[code-quality-checklist.md](guides/code-quality-checklist.md)** - Pre-commit quality standards and review criteria
+### 📋 **Framework Guidelines** - Standards & Processes
+- **[code-quality-checklist.md](Framework Guidelines/code-quality-checklist.md)** - Quality standards and review criteria
+- **[deployment-guide.md](Framework Guidelines/deployment-guide.md)** - Deployment processes and environment setup
+- **[migration-history.md](Framework Guidelines/migration-history.md)** - Project evolution and architecture decisions
 
-### `/sessions/` - Session Tracking
-- **[2025-09-08-database-integration.md](sessions/2025-09-08-database-integration.md)** - Database migration completion status
+### 🔍 **Code Analysis** - Quality Assessments
+- **[ANALYSIS_REPORT_2025-09-09.md](Code Analysis/ANALYSIS_REPORT_2025-09-09.md)** - Latest comprehensive code quality analysis
+- **[ANALYSIS_REPORT_2025-09-07.md](Code Analysis/ANALYSIS_REPORT_2025-09-07.md)** - MVP phase code analysis
 
-### `/archive/` - Historical Versions
-- **MVP_Code_Review.md** - Initial code review from MVP phase
-- **Technical_Implementation/** - Early technical implementation notes
+### 📚 **Archive** - Historical Documents
+- Previous versions and outdated documentation for reference
 
-### `/architecture/` - Technical Architecture
-- **[migration-history.md](architecture/migration-history.md)** - Project evolution from Lovable to React/Supabase
+## 🎯 Category Purpose
 
-### `/assets/` - Visual Resources (Future)
-- Screenshots, diagrams, and visual documentation
+### **Current Projects** 📁
+Active work documentation including session summaries, project status reports, and technical implementation details for ongoing features.
 
-## 🔄 Version Control
+### **Framework Guidelines** 📁  
+Established standards, processes, and architectural guidelines that define how the project operates and evolves.
 
-### Naming Conventions
-- **Current files**: `kebab-case.md` (no version suffix)
-- **Archived files**: `Original_Name.md` or `name-v1.md`
-- **Session files**: `YYYY-MM-DD-description.md`
+### **Code Analysis** 📁
+Regular code quality assessments, metrics, and technical debt analysis to maintain high development standards.
 
-### File Headers
-All documentation includes version headers:
-```markdown
-**Version:** X.Y
-**Updated:** YYYY-MM-DD  
-**Author:** [Author Name]
-**Status:** Current | Archived | Draft
-```
+## 📋 Quick Navigation
 
-## 📋 Quick Links
+### **Start Here**
+- **Current Status**: [Project Status Report](Current Projects/2025-09-09-project-status.md)
+- **Latest Work**: [Session Summary](Current Projects/2025-09-09-session-summary.md)
+- **Quality Check**: [Latest Analysis](Code Analysis/ANALYSIS_REPORT_2025-09-09.md)
 
-### Development
-- [Start Here: Development Workflow](current/development-workflow.md)
-- [Database Schema Reference](current/database-schema.md)
-- [Claude Instructions](current/CLAUDE.md)
-- [Code Quality Checklist](guides/code-quality-checklist.md)
-
-### Deployment
-- [Deployment Guide](guides/deployment-guide.md)
-
-### Architecture & History
-- [Migration History](architecture/migration-history.md)
-- [Latest Session Status](sessions/2025-09-08-database-integration.md)
+### **For Development**
+- **Standards**: [Code Quality Checklist](Framework Guidelines/code-quality-checklist.md)
+- **Deployment**: [Deployment Guide](Framework Guidelines/deployment-guide.md)
+- **Architecture**: [Migration History](Framework Guidelines/migration-history.md)
 
 ---
 

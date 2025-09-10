@@ -73,8 +73,7 @@ src/scripts/
 .serena/cache/
 
 # Development documentation artifacts
-Documents/analysis/
-Documents/sessions/
-Documents/current/
+Documents/Code Analysis/
+Documents/Current Projects/
 Documents/archive/
 Documents/.obsidian/
