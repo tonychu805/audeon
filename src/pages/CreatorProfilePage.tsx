@@ -86,7 +86,10 @@ export const CreatorProfilePage: React.FC = () => {
         <div className="text-center">
           <p className="text-gray-400">Creator not found</p>
           <button 
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              console.log('Go back button clicked');
+              navigate('/');
+            }}
             className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
           >
             Go Back
@@ -100,8 +103,11 @@ export const CreatorProfilePage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
         <button 
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            window.location.href = '/home';
+          }}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          type="button"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
