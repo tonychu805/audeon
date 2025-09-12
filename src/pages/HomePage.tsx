@@ -49,24 +49,36 @@ export const HomePage: React.FC = () => {
   );
 
 
-  // Touch/drag handlers for smooth scrolling
+  // Momentum-based carousel state
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragStartScrollPosition, setDragStartScrollPosition] = useState(0);
+  const [lastDragTime, setLastDragTime] = useState(0);
+  const [lastDragPosition, setLastDragPosition] = useState(0);
+  const [velocity, setVelocity] = useState(0);
+  const [isDecelerating, setIsDecelerating] = useState(false);
 
   const DRAG_THRESHOLD = 5; // pixels before considering it a drag
+  const MOMENTUM_FACTOR = 0.95; // Deceleration factor (0-1, closer to 1 = less friction)
+  const MIN_VELOCITY = 0.5; // Minimum velocity to continue momentum
+  const MAX_VELOCITY = 15; // Maximum velocity cap
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsMouseDown(true);
     setDragStart(e.clientX);
     setDragStartScrollPosition(scrollPosition);
+    setLastDragTime(Date.now());
+    setLastDragPosition(e.clientX);
+    setIsDecelerating(false); // Stop any existing momentum
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isMouseDown) return;
     
-    const dragDistance = Math.abs(dragStart - e.clientX);
+    const currentTime = Date.now();
+    const currentPosition = e.clientX;
+    const dragDistance = Math.abs(dragStart - currentPosition);
     
     // Only start dragging if we've moved beyond threshold
     if (dragDistance > DRAG_THRESHOLD && !isDragging) {
@@ -75,13 +87,27 @@ export const HomePage: React.FC = () => {
     
     if (isDragging) {
       e.preventDefault();
-      const scrollDistance = dragStart - e.clientX;
+      const scrollDistance = dragStart - currentPosition;
       const newPosition = Math.max(0, dragStartScrollPosition + scrollDistance);
       setScrollPosition(newPosition);
+      
+      // Calculate velocity for momentum
+      const timeDelta = currentTime - lastDragTime;
+      const positionDelta = currentPosition - lastDragPosition;
+      if (timeDelta > 0) {
+        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16)); // Normalize to ~60fps
+        setVelocity(newVelocity);
+      }
+      
+      setLastDragTime(currentTime);
+      setLastDragPosition(currentPosition);
     }
   };
 
   const handleMouseUp = () => {
+    if (isDragging && Math.abs(velocity) > MIN_VELOCITY) {
+      setIsDecelerating(true);
+    }
     setIsMouseDown(false);
     setIsDragging(false);
   };
@@ -90,12 +116,17 @@ export const HomePage: React.FC = () => {
     setIsMouseDown(true);
     setDragStart(e.touches[0].clientX);
     setDragStartScrollPosition(scrollPosition);
+    setLastDragTime(Date.now());
+    setLastDragPosition(e.touches[0].clientX);
+    setIsDecelerating(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isMouseDown) return;
     
-    const dragDistance = Math.abs(dragStart - e.touches[0].clientX);
+    const currentTime = Date.now();
+    const currentPosition = e.touches[0].clientX;
+    const dragDistance = Math.abs(dragStart - currentPosition);
     
     // Only start dragging if we've moved beyond threshold
     if (dragDistance > DRAG_THRESHOLD && !isDragging) {
@@ -103,16 +134,56 @@ export const HomePage: React.FC = () => {
     }
     
     if (isDragging) {
-      const scrollDistance = dragStart - e.touches[0].clientX;
+      const scrollDistance = dragStart - currentPosition;
       const newPosition = Math.max(0, dragStartScrollPosition + scrollDistance);
       setScrollPosition(newPosition);
+      
+      // Calculate velocity for momentum
+      const timeDelta = currentTime - lastDragTime;
+      const positionDelta = currentPosition - lastDragPosition;
+      if (timeDelta > 0) {
+        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
+        setVelocity(newVelocity);
+      }
+      
+      setLastDragTime(currentTime);
+      setLastDragPosition(currentPosition);
     }
   };
 
   const handleTouchEnd = () => {
+    if (isDragging && Math.abs(velocity) > MIN_VELOCITY) {
+      setIsDecelerating(true);
+    }
     setIsMouseDown(false);
     setIsDragging(false);
   };
+
+  // Momentum scrolling animation
+  useEffect(() => {
+    if (!isDecelerating || Math.abs(velocity) < MIN_VELOCITY) {
+      if (isDecelerating) {
+        setIsDecelerating(false);
+      }
+      return;
+    }
+
+    const animationFrame = requestAnimationFrame(() => {
+      setScrollPosition(currentPosition => {
+        const maxScroll = Math.max(0, (featuredCreators.length - 3) * 160); // Account for actual card width
+        const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + velocity));
+        return newPosition;
+      });
+      
+      // Apply friction to velocity
+      setVelocity(currentVelocity => {
+        const newVelocity = currentVelocity * MOMENTUM_FACTOR;
+        return Math.abs(newVelocity) < MIN_VELOCITY ? 0 : newVelocity;
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isDecelerating, velocity, featuredCreators.length]);
 
   if (isLoading) {
     return (
@@ -161,10 +232,10 @@ export const HomePage: React.FC = () => {
         
         <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
           <div 
-            className="flex space-x-4 transition-transform duration-500 ease-out"
+            className="flex space-x-4"
             style={{
               transform: `translateX(-${scrollPosition}px)`,
-              transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+              transition: (isDragging || isDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
@@ -204,26 +275,6 @@ export const HomePage: React.FC = () => {
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
         </div>
 
-        {/* Smooth scroll indicator */}
-        {featuredCreators.length > 3 && (
-          <div className="flex justify-center mt-4">
-            <div className="flex space-x-1">
-              {Array.from({ length: Math.max(1, featuredCreators.length - 2) }).map((_, index) => {
-                const cardWidth = 180;
-                const indicatorPosition = (index * cardWidth);
-                const isActive = Math.abs(scrollPosition - indicatorPosition) < cardWidth / 2;
-                return (
-                  <div
-                    key={index}
-                    className={`h-1 rounded-full transition-all duration-300 ${
-                      isActive ? 'bg-purple-600 w-8' : 'bg-gray-300 w-2'
-                    }`}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );
