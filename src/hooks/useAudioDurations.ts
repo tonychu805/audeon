@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import { useState, useEffect } from 'react';
 import { AudioTrack } from '../types';
 import { getAudioDuration } from '../utils/audioDuration';
@@ -16,7 +17,7 @@ export const useAudioDurations = (tracks: AudioTrack[]) => {
               const duration = await getAudioDuration(track.audioUrl);
               return { ...track, duration };
             } catch (error) {
-              console.error(`Failed to load duration for track ${track.id}:`, error);
+              logger.error(`Failed to load duration for track ${track.id}:`, error);
               return track;
             }
           }

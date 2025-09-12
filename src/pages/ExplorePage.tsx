@@ -1,31 +1,34 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
-import { categoryService, creatorService, trackService } from '../services/database';
-import { Category, Creator, AudioTrack } from '../types';
+import { categoryService, creatorService } from '../services/database';
+import { Category, Creator } from '../types';
+import { TrackCard } from '../components/TrackCard';
+import { SearchBar } from '../components/SearchBar';
+import { useNavigate } from 'react-router-dom';
+import { useAudioTracks } from '../hooks/useAudioTracks';
 
 export const ExplorePage: React.FC = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
-  const [tracks, setTracks] = useState<AudioTrack[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { tracks, isLoading: tracksLoading } = useAudioTracks();
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [categoriesData, creatorsData, tracksData] = await Promise.all([
+        const [categoriesData, creatorsData] = await Promise.all([
           categoryService.getAll(),
-          creatorService.getAll(),
-          trackService.getAll()
+          creatorService.getAll()
         ]);
         setCategories(categoriesData);
         setCreators(creatorsData);
-        setTracks(tracksData);
       } catch (error) {
-        console.error('Failed to load explore data:', error);
+        logger.error('Failed to load explore data:', error);
         setCategories([]);
         setCreators([]);
-        setTracks([]);
       } finally {
         setIsLoading(false);
       }
@@ -78,12 +81,12 @@ export const ExplorePage: React.FC = () => {
       })
     : creators;
 
-  if (isLoading) {
+  if (isLoading || tracksLoading) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading content...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading content...</p>
         </div>
       </div>
     );
@@ -139,8 +142,13 @@ export const ExplorePage: React.FC = () => {
     );
   }
 
-  // Get featured track for recommended section
+  // Get featured track for recommended section - prefer tracks with actual duration
   const getFeaturedTrack = () => {
+    // First try to find a track with actual duration (not 0:00)
+    const trackWithDuration = tracks.find(track => track.duration && track.duration !== '0:00');
+    if (trackWithDuration) return trackWithDuration;
+    
+    // Fallback to first track if none have duration
     return tracks.length > 0 ? tracks[0] : null;
   };
 
@@ -149,50 +157,23 @@ export const ExplorePage: React.FC = () => {
     <div className="bg-white min-h-screen">
       {/* Search Bar */}
       <div className="px-4 pt-6 pb-4">
-        <div className="relative mb-6">
-          <input
-            type="text"
-            placeholder="Search Following"
+        <div className="mb-6">
+          <SearchBar 
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-100 rounded-lg text-gray-700 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+            onChange={setSearchQuery}
+            placeholder="Search tracks, creators..."
           />
-          <div className="absolute right-3 top-3">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
         </div>
         
         {/* Recommended Section */}
         <h2 className="text-xl font-bold text-black mb-4">RECOMMENDED</h2>
         {getFeaturedTrack() && (
-          <div className="relative bg-black rounded-lg overflow-hidden aspect-[16/9] mb-6 cursor-pointer">
-            <img
-              src={getFeaturedTrack()?.main_image.url || 'https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=600&h=300&fit=crop'}
-              alt={getFeaturedTrack()?.title}
-              className="w-full h-full object-cover opacity-70"
+          <div className="mb-6">
+            <TrackCard 
+              track={getFeaturedTrack()!} 
+              showSaveButton 
+              onClick={() => navigate(`/tracks/${getFeaturedTrack()?.id}`)}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-4">
-              <h3 className="text-white font-bold text-lg leading-tight mb-1">
-                {getFeaturedTrack()?.title}
-              </h3>
-              <p className="text-gray-300 text-sm">
-                By {getFeaturedTrack()?.creator}
-              </p>
-              <p className="text-gray-400 text-xs mt-1">
-                {getFeaturedTrack()?.category} • {getFeaturedTrack()?.read_time}
-              </p>
-            </div>
-            {/* Play button */}
-            <div className="absolute top-4 right-4">
-              <button className="bg-white/20 backdrop-blur-sm rounded-full p-3 hover:bg-white/30 transition-all">
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
           </div>
         )}
 

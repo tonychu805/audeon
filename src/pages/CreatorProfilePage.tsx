@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Users } from 'lucide-react';
@@ -13,7 +14,7 @@ import { TrackCard } from '../components/TrackCard';
 import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
-import { Creator, CreatorLink } from '../types';
+
 
 // Helper function to get platform icon
 const getPlatformIcon = (platform: string) => {
@@ -56,7 +57,7 @@ export const CreatorProfilePage: React.FC = () => {
         const foundCreator = creators.find(c => c.id === creatorId);
         setCreator(foundCreator || null);
       } catch (error) {
-        console.error('Failed to load creator:', error);
+        logger.error('Failed to load creator:', error);
         setCreator(null);
       } finally {
         setIsLoading(false);
@@ -87,7 +88,7 @@ export const CreatorProfilePage: React.FC = () => {
           <p className="text-gray-400">Creator not found</p>
           <button 
             onClick={() => {
-              console.log('Go back button clicked');
+              logger.debug('Go back button clicked');
               navigate('/');
             }}
             className="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"

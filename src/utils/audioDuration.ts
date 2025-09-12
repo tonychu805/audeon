@@ -1,5 +1,5 @@
 export const getAudioDuration = (audioUrl: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const audio = new Audio(audioUrl);
     audio.preload = 'metadata'; // Only load metadata, not full audio
     

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, Heart, Calendar, User, Share, Download, MoreHorizontal } from 'lucide-react';
@@ -26,7 +27,7 @@ export const TrackDetailPage: React.FC = () => {
         const foundCreator = creators.find(c => c.name === track.creator);
         setCreator(foundCreator || null);
       } catch (error) {
-        console.error('Failed to load creator:', error);
+        logger.error('Failed to load creator:', error);
         setCreator(null);
       } finally {
         setCreatorLoading(false);

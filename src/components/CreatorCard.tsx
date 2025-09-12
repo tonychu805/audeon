@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React from 'react';
 import { Creator } from '../types';
 
@@ -17,12 +18,12 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onClick }) =>
         alt={creator.name}
         className="w-full h-32 object-cover rounded-lg mb-3"
         onError={(e) => {
-          console.error('Creator image load error:', creator.name, creator.image);
+          logger.error('Creator image load error:', creator.name, creator.image);
           // Hide broken image or use placeholder
           e.currentTarget.style.display = 'none';
         }}
         onLoad={() => {
-          console.log('Creator image loaded:', creator.name);
+          logger.debug('Creator image loaded:', creator.name);
         }}
       />
       <h3 className="font-semibold text-gray-900 mb-1">{creator.name}</h3>

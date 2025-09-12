@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import React from 'react';
 import { Play, Pause, Heart, Calendar } from 'lucide-react';
 import { AudioTrack } from '../types';
@@ -44,12 +45,12 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
           alt={track.title}
           className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
           onError={(e) => {
-            console.error('Image load error for:', track.title, track.main_image.url);
+            logger.error('Image load error for:', track.title, track.main_image.url);
             // Fallback to a default image or keep current src
             e.currentTarget.src = 'https://via.placeholder.com/80?text=Audio';
           }}
           onLoad={() => {
-            console.log('Image loaded successfully for:', track.title, track.main_image.url);
+            logger.debug('Image loaded successfully for:', track.title, track.main_image.url);
           }}
         />
         <div className="flex-1">

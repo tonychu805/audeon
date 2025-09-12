@@ -14,6 +14,16 @@ export interface Creator {
   socialLinks?: CreatorLink[];
 }
 
+export interface Voice {
+  id: string;
+  name: string;
+  provider: string;
+  language?: string;
+  gender?: 'male' | 'female' | 'neutral';
+  accent?: string;
+  description?: string;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -49,7 +59,7 @@ export interface AudioTrack {
     width: number;
     height: number;
   };
-  voices: any[];
+  voices: Voice[];
   gender: string;
   audio_config: {
     tone_override: string;

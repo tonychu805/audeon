@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { logger } from '../utils/logger';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '../components/SearchBar';
 import { TrackCard } from '../components/TrackCard';
@@ -28,12 +29,19 @@ export const HomePage: React.FC = () => {
         const creators = await creatorService.getAll();
         setFeaturedCreators(creators.slice(0, 10)); // Get more creators for smooth scrolling
       } catch (error) {
-        console.error('Failed to load creators:', error);
+        logger.error('Failed to load creators:', error);
         setFeaturedCreators([]);
       }
     };
     loadCreators();
   }, []);
+
+  // Scroll to top when loading completes
+  useEffect(() => {
+    if (!isLoading) {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [isLoading]);
 
   const filteredTracks = audioTracks.filter(track =>
     track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -83,10 +91,10 @@ export const HomePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading audio tracks...</p>
+          <p className="text-gray-500">Loading content...</p>
         </div>
       </div>
     );

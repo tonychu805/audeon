@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { AudioTrack, PlayerState } from '../types';
+import { logger } from '../utils/logger';
 
 interface PlayerContextType extends PlayerState {
   playTrack: (track: AudioTrack) => void;
@@ -26,7 +27,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const playTrack = (track: AudioTrack) => {
-    console.log('Playing track:', track.title, 'Audio URL:', track.audioUrl);
+    logger.debug('Playing track:', track.title, 'Audio URL:', track.audioUrl);
     setCurrentTrack(track);
     setIsPlaying(true);
   };
@@ -65,7 +66,7 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.play().catch(error => {
-          console.error('Audio play failed:', error);
+          logger.error('Audio play failed:', error);
           setIsPlaying(false);
         });
       } else {
@@ -104,11 +105,11 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           src={currentTrack.audioUrl}
           onEnded={nextTrack}
           onError={(e) => {
-            console.error('Audio load error:', e, 'for track:', currentTrack.title);
+            logger.error('Audio load error:', e, 'for track:', currentTrack.title);
             setIsPlaying(false);
           }}
           onLoadStart={() => {
-            console.log('Loading audio:', currentTrack.title, currentTrack.audioUrl);
+            logger.debug('Loading audio:', currentTrack.title, currentTrack.audioUrl);
           }}
         />
       )}

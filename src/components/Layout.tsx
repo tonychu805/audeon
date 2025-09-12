@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navigation } from './Navigation';
 import { AudioPlayer } from './AudioPlayer';
 
 export const Layout: React.FC = () => {
   const location = useLocation();
+
+  // Scroll to top on route change
+  useEffect(() => {
+    // Use setTimeout to ensure DOM is updated first
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 0);
+    
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
   
   // Extract active tab from current pathname
   const getActiveTab = (pathname: string): string => {

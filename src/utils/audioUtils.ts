@@ -1,5 +1,8 @@
+import { logger } from '../utils/logger';
+import { AudioTrack } from '../types';
+
 export const getAudioDuration = (audioUrl: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const audio = new Audio();
     
     audio.addEventListener('loadedmetadata', () => {
@@ -16,7 +19,7 @@ export const getAudioDuration = (audioUrl: string): Promise<string> => {
     });
     
     audio.addEventListener('error', () => {
-      console.warn(`Could not load audio metadata for: ${audioUrl}`);
+      logger.warn(`Could not load audio metadata for: ${audioUrl}`);
       resolve('0:00');
     });
     
@@ -24,14 +27,14 @@ export const getAudioDuration = (audioUrl: string): Promise<string> => {
   });
 };
 
-export const loadAudioDurations = async (tracks: any[]) => {
+export const loadAudioDurations = async (tracks: AudioTrack[]): Promise<AudioTrack[]> => {
   const updatedTracks = await Promise.all(
     tracks.map(async (track) => {
       try {
         const duration = await getAudioDuration(track.audioUrl);
         return { ...track, duration };
-      } catch (error) {
-        console.warn(`Failed to get duration for track: ${track.title}`);
+      } catch {
+        logger.warn(`Failed to get duration for track: ${track.title}`);
         return { ...track, duration: '0:00' };
       }
     })

@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import { useState, useEffect } from 'react';
 import { AudioTrack } from '../types';
 import { trackService } from '../services/database';
@@ -22,7 +23,7 @@ export const useAudioTracks = () => {
                 const duration = await getAudioDuration(track.audioUrl);
                 return { ...track, duration };
               } catch (error) {
-                console.error(`Failed to load duration for track ${track.id}:`, error);
+                logger.error(`Failed to load duration for track ${track.id}:`, error);
                 return track;
               }
             }
@@ -31,7 +32,7 @@ export const useAudioTracks = () => {
         );
         setTracks(tracksWithDurations);
       } catch (error) {
-        console.error('Failed to load audio tracks:', error);
+        logger.error('Failed to load audio tracks:', error);
         setTracks([]);
       } finally {
         setIsLoading(false);

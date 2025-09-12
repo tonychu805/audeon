@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
-import type { Creator, AudioTrack, Community, Category, CreatorLink } from '../types';
+import { logger } from '../utils/logger';
+
 
 // Helper function to get Supabase storage URL
 export const getStorageUrl = (bucket: string, filename: string) => {
@@ -16,7 +17,7 @@ export const communityService = {
       .order('name');
     
     if (error) {
-      console.error('Error fetching communities:', error);
+      logger.error('Error fetching communities:', error);
       return [];
     }
     
@@ -31,7 +32,7 @@ export const communityService = {
       .single();
     
     if (error) {
-      console.error('Error fetching community:', error);
+      logger.error('Error fetching community:', error);
       return null;
     }
     
@@ -48,7 +49,7 @@ export const creatorService = {
       .order('follower_count', { ascending: false });
     
     if (error) {
-      console.error('Error fetching creators:', error);
+      logger.error('Error fetching creators:', error);
       return [];
     }
     
@@ -71,7 +72,7 @@ export const creatorService = {
       .single();
     
     if (error) {
-      console.error('Error fetching creator:', error);
+      logger.error('Error fetching creator:', error);
       return null;
     }
     
@@ -96,7 +97,7 @@ export const creatorService = {
       .order('follower_count', { ascending: false });
     
     if (error) {
-      console.error('Error fetching creators by category:', error);
+      logger.error('Error fetching creators by category:', error);
       return [];
     }
     
@@ -126,7 +127,7 @@ export const trackService = {
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching tracks:', error);
+      logger.error('Error fetching tracks:', error);
       return [];
     }
     
@@ -144,7 +145,7 @@ export const trackService = {
       releaseDate: track.release_date || '',
       full_content: track.full_content || '',
       read_time: track.read_time || '',
-      duration: '0:00',
+      duration: track.duration || '0:00',
       main_image: {
         url: track.main_image_url || '',
         caption: track.main_image_caption || '',
@@ -170,7 +171,7 @@ export const trackService = {
       .single();
     
     if (error) {
-      console.error('Error fetching track:', error);
+      logger.error('Error fetching track:', error);
       return null;
     }
     
@@ -190,7 +191,7 @@ export const trackService = {
       releaseDate: data.release_date || '',
       full_content: data.full_content || '',
       read_time: data.read_time || '',
-      duration: '0:00',
+      duration: data.duration || '0:00',
       main_image: {
         url: data.main_image_url || '',
         caption: data.main_image_caption || '',
@@ -216,7 +217,7 @@ export const trackService = {
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching tracks by creator:', error);
+      logger.error('Error fetching tracks by creator:', error);
       return [];
     }
     
@@ -234,7 +235,7 @@ export const trackService = {
       releaseDate: track.release_date || '',
       full_content: track.full_content || '',
       read_time: track.read_time || '',
-      duration: '0:00',
+      duration: track.duration || '0:00',
       main_image: {
         url: track.main_image_url || '',
         caption: track.main_image_caption || '',
@@ -260,7 +261,7 @@ export const trackService = {
       .order('created_at', { ascending: false });
     
     if (error) {
-      console.error('Error fetching tracks by category:', error);
+      logger.error('Error fetching tracks by category:', error);
       return [];
     }
     
@@ -278,7 +279,7 @@ export const trackService = {
       releaseDate: track.release_date || '',
       full_content: track.full_content || '',
       read_time: track.read_time || '',
-      duration: '0:00',
+      duration: track.duration || '0:00',
       main_image: {
         url: track.main_image_url || '',
         caption: track.main_image_caption || '',
@@ -301,7 +302,7 @@ export const categoryService = {
       .order('name');
     
     if (error) {
-      console.error('Error fetching categories:', error);
+      logger.error('Error fetching categories:', error);
       return [];
     }
     
@@ -316,7 +317,7 @@ export const categoryService = {
       .single();
     
     if (error) {
-      console.error('Error fetching category:', error);
+      logger.error('Error fetching category:', error);
       return null;
     }
     

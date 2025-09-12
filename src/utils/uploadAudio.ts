@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import { supabase } from '../lib/supabase';
 
 export const uploadAudioFile = async (file: File, filename: string) => {
@@ -24,7 +25,7 @@ export const uploadAudioFile = async (file: File, filename: string) => {
       path: data.path
     };
   } catch (error) {
-    console.error('Error uploading audio file:', error);
+    logger.error('Error uploading audio file:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
@@ -47,7 +48,7 @@ export const listAudioFiles = async () => {
       files: data
     };
   } catch (error) {
-    console.error('Error listing audio files:', error);
+    logger.error('Error listing audio files:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'
