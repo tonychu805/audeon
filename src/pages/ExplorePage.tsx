@@ -116,6 +116,9 @@ export const ExplorePage: React.FC = () => {
             {filteredCreators.map(creator => (
               <div
                 key={creator.id}
+                onClick={() => navigate(`/creators/${creator.id}`, { 
+                  state: { from: '/explore' } 
+                })}
                 className="bg-white rounded-xl border p-4 hover:shadow-md transition-all cursor-pointer"
               >
                 <img

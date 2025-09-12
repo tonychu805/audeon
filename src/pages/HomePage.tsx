@@ -51,41 +51,66 @@ export const HomePage: React.FC = () => {
 
   // Touch/drag handlers for smooth scrolling
   const [isDragging, setIsDragging] = useState(false);
+  const [isMouseDown, setIsMouseDown] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragStartScrollPosition, setDragStartScrollPosition] = useState(0);
 
+  const DRAG_THRESHOLD = 5; // pixels before considering it a drag
+
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
+    setIsMouseDown(true);
     setDragStart(e.clientX);
     setDragStartScrollPosition(scrollPosition);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const dragDistance = dragStart - e.clientX;
-    const newPosition = Math.max(0, dragStartScrollPosition + dragDistance);
-    setScrollPosition(newPosition);
+    if (!isMouseDown) return;
+    
+    const dragDistance = Math.abs(dragStart - e.clientX);
+    
+    // Only start dragging if we've moved beyond threshold
+    if (dragDistance > DRAG_THRESHOLD && !isDragging) {
+      setIsDragging(true);
+    }
+    
+    if (isDragging) {
+      e.preventDefault();
+      const scrollDistance = dragStart - e.clientX;
+      const newPosition = Math.max(0, dragStartScrollPosition + scrollDistance);
+      setScrollPosition(newPosition);
+    }
   };
 
   const handleMouseUp = () => {
+    setIsMouseDown(false);
     setIsDragging(false);
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
+    setIsMouseDown(true);
     setDragStart(e.touches[0].clientX);
     setDragStartScrollPosition(scrollPosition);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    const dragDistance = dragStart - e.touches[0].clientX;
-    const newPosition = Math.max(0, dragStartScrollPosition + dragDistance);
-    setScrollPosition(newPosition);
+    if (!isMouseDown) return;
+    
+    const dragDistance = Math.abs(dragStart - e.touches[0].clientX);
+    
+    // Only start dragging if we've moved beyond threshold
+    if (dragDistance > DRAG_THRESHOLD && !isDragging) {
+      setIsDragging(true);
+    }
+    
+    if (isDragging) {
+      const scrollDistance = dragStart - e.touches[0].clientX;
+      const newPosition = Math.max(0, dragStartScrollPosition + scrollDistance);
+      setScrollPosition(newPosition);
+    }
   };
 
   const handleTouchEnd = () => {
+    setIsMouseDown(false);
     setIsDragging(false);
   };
 
@@ -161,7 +186,14 @@ export const HomePage: React.FC = () => {
               >
                 <CreatorCard 
                   creator={creator} 
-                  onClick={() => !isDragging && navigate(`/creators/${creator.id}`)}
+                  onClick={() => {
+                    // Only navigate if we're not dragging
+                    if (!isDragging) {
+                      navigate(`/creators/${creator.id}`, { 
+                        state: { from: '/home' } 
+                      });
+                    }
+                  }}
                 />
               </div>
             ))}

@@ -1,6 +1,6 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users } from 'lucide-react';
 import { 
   FaLinkedin,
@@ -14,6 +14,7 @@ import { TrackCard } from '../components/TrackCard';
 import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+import { Creator } from '../types';
 
 
 // Helper function to get platform icon
@@ -41,6 +42,7 @@ const getPlatformIcon = (platform: string) => {
 export const CreatorProfilePage: React.FC = () => {
   const { creatorId } = useParams<{ creatorId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading: tracksLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
@@ -104,10 +106,30 @@ export const CreatorProfilePage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
         <button 
-          onClick={() => {
-            window.location.href = '/home';
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            logger.debug('Back button clicked');
+            
+            // Get the previous path from location state
+            const from = location.state?.from;
+            logger.debug('Location state from:', from);
+            
+            if (from) {
+              logger.debug('Navigating back to:', from);
+              window.location.assign(from);
+            } else {
+              // Fallback: try browser history, then home
+              logger.debug('No state found, trying browser history');
+              if (document.referrer && document.referrer.includes(window.location.origin)) {
+                window.history.back();
+              } else {
+                logger.debug('Using home as fallback');
+                window.location.assign('/home');
+              }
+            }
           }}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
           type="button"
         >
           <ArrowLeft className="w-6 h-6" />
