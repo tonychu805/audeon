@@ -1,7 +1,7 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { categoryService, creatorService } from '../services/database';
-import { Category, Creator } from '../types';
+import { Category, Creator, CategoryWithAssets } from '../types';
 import { TrackCard } from '../components/TrackCard';
 import { SearchBar } from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +10,7 @@ import { useAudioTracks } from '../hooks/useAudioTracks';
 export const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryWithAssets[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +20,7 @@ export const ExplorePage: React.FC = () => {
     const loadData = async () => {
       try {
         const [categoriesData, creatorsData] = await Promise.all([
-          categoryService.getAll(),
+          categoryService.getForExplore(), // Use compatibility method that falls back gracefully
           creatorService.getAll()
         ]);
         setCategories(categoriesData);
@@ -42,11 +42,14 @@ export const ExplorePage: React.FC = () => {
       const categoryCreators = creators.filter(c => 
         c.category.toLowerCase() === category.name.toLowerCase()
       );
+      
+      
       return {
         id: `category-${category.id}`,
         title: category.name.toUpperCase(),
         author: `${categoryCreators.length} creators`,
-        image: `https://images.unsplash.com/photo-${getImageForCategory(category.name)}?w=300&h=200&fit=crop`,
+        // Use heroImageUrl from new system, fallback to existing logic
+        image: category.heroImageUrl || `https://images.unsplash.com/photo-${getImageForCategory(category.name)}?w=300&h=200&fit=crop`,
         type: 'category' as const,
         data: category
       };
@@ -55,12 +58,12 @@ export const ExplorePage: React.FC = () => {
 
   const getImageForCategory = (categoryName: string) => {
     const imageMap: { [key: string]: string } = {
-      'business': '1560472354-b33ff0c44a43',
-      'product management': '1546519638-68e109498ffc',
-      'marketing': '1504711434969-e33886168f5c',
-      'data science': '1446776877081-d282a0f896e2',
-      'psychology': '1506905925346-21bda4d32df4',
-      'technology': '1586339949916-3e9457bef6d3'
+      'business': '1507679799987-cfe2ef4d2e1f',        // Business strategy meeting
+      'product management': '1611224923853-80b023f02d71', // Product development
+      'marketing': '1504711434969-e33886168f5c',          // Keep current (good)
+      'data science': '1551288049-d7102ea010ae',           // Data visualization
+      'psychology': '1559757148-5c350d0d3c56',             // Psychology/mental health
+      'technology': '1586339949916-3e9457bef6d3'           // Keep current (good)
     };
     return imageMap[categoryName.toLowerCase()] || '1586339949916-3e9457bef6d3';
   };

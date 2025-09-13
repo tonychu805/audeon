@@ -28,6 +28,59 @@ export interface Category {
   id: string;
   name: string;
   icon: string;
+  slug?: string;
+  description?: string;
+  hero_image_path?: string;
+  mobile_image_path?: string;
+  icon_path?: string;
+  gradient_config?: {
+    from: string;
+    to: string;
+  };
+  color_theme?: string;
+  industry?: string;
+  target_audience?: string[];
+  keywords?: string[];
+  parent_id?: string;
+  level?: number;
+  sort_order?: number;
+  is_active?: boolean;
+  is_featured?: boolean;
+  view_count?: number;
+  creator_count?: number;
+  track_count?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface CategoryAsset {
+  id: string;
+  category_id: string;
+  asset_type: 'hero' | 'mobile' | 'icon' | 'thumbnail';
+  file_path: string;
+  file_size?: number;
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+  format: 'jpg' | 'webp' | 'svg' | 'png';
+  is_primary: boolean;
+  created_at: string;
+}
+
+export interface CategoryWithAssets extends Category {
+  subcategories?: CategoryWithAssets[];
+  assets?: CategoryAsset[];
+  heroImageUrl?: string;
+  mobileImageUrl?: string;
+  thumbnailUrl?: string;
+  iconUrl?: string;
+}
+
+export interface CategoryHierarchy extends Category {
+  path: string[];
+  id_path: string[];
+  depth: number;
 }
 
 export interface Community {
