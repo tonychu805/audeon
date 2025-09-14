@@ -48,7 +48,10 @@ export const CreatorProfilePage: React.FC = () => {
   const [creator, setCreator] = useState<Creator | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  const creatorTracks = audioTracks.filter(track => track.creator === creator?.name);
+  const creatorTracks = React.useMemo(() => 
+    audioTracks.filter(track => track.creator === creator?.name), 
+    [audioTracks, creator?.name]
+  );
 
   useEffect(() => {
     const loadCreator = async () => {
@@ -109,23 +112,32 @@ export const CreatorProfilePage: React.FC = () => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            logger.debug('Back button clicked');
+            logger.debug('Creator back button clicked');
             
             // Get the previous path from location state
             const from = location.state?.from;
-            logger.debug('Location state from:', from);
+            logger.debug('Creator location state from:', from);
             
-            if (from) {
+            // Smart navigation to prevent loops
+            const currentPath = `/creators/${creatorId}`;
+            // Always go to home if we're coming from a track page to break potential loops
+            if (from && from.includes('/tracks/')) {
+              logger.debug('Detected track page in from state, navigating to home to prevent loop');
+              navigate('/home', { replace: true });
+            } else if (from && from === currentPath) {
+              logger.debug('Detected circular reference, navigating to home to prevent loop');
+              navigate('/home', { replace: true });
+            } else if (from) {
               logger.debug('Navigating back to:', from);
-              window.location.assign(from);
+              navigate(from, { replace: true });
             } else {
               // Fallback: try browser history, then home
               logger.debug('No state found, trying browser history');
               if (document.referrer && document.referrer.includes(window.location.origin)) {
-                window.history.back();
+                navigate(-1);
               } else {
                 logger.debug('Using home as fallback');
-                window.location.assign('/home');
+                navigate('/home', { replace: true });
               }
             }
           }}
@@ -194,7 +206,7 @@ export const CreatorProfilePage: React.FC = () => {
                 key={track.id} 
                 track={track} 
                 showSaveButton 
-                onClick={() => navigate(`/tracks/${track.id}`)}
+                onClick={() => navigate(`/tracks/${track.id}`, { state: { from: `/creators/${creator.id}` } })}
               />
             ))}
           </div>

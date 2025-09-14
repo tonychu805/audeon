@@ -1,8 +1,9 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
-import { categoryService, creatorService } from '../services/database';
-import { Category, Creator, CategoryWithAssets } from '../types';
+import { categoryService, creatorService, communityService } from '../services/database';
+import { Category, Creator, CategoryWithAssets, Community } from '../types';
 import { TrackCard } from '../components/TrackCard';
+import { CommunityCard } from '../components/CommunityCard';
 import { SearchBar } from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
 import { useAudioTracks } from '../hooks/useAudioTracks';
@@ -12,6 +13,7 @@ export const ExplorePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<CategoryWithAssets[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
+  const [communities, setCommunities] = useState<Community[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { tracks, isLoading: tracksLoading } = useAudioTracks();
@@ -19,16 +21,19 @@ export const ExplorePage: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [categoriesData, creatorsData] = await Promise.all([
+        const [categoriesData, creatorsData, communitiesData] = await Promise.all([
           categoryService.getForExplore(), // Use compatibility method that falls back gracefully
-          creatorService.getAll()
+          creatorService.getAll(),
+          communityService.getAll()
         ]);
         setCategories(categoriesData);
         setCreators(creatorsData);
+        setCommunities(communitiesData);
       } catch (error) {
         logger.error('Failed to load explore data:', error);
         setCategories([]);
         setCreators([]);
+        setCommunities([]);
       } finally {
         setIsLoading(false);
       }
@@ -84,6 +89,17 @@ export const ExplorePage: React.FC = () => {
       })
     : creators;
 
+  // Get communities that have tracks in the selected category
+  const getCommunitiesInCategory = (categoryName: string) => {
+    const categoryTracks = tracks.filter(track => 
+      track.category.toLowerCase() === categoryName.toLowerCase()
+    );
+    const communityNames = [...new Set(categoryTracks.map(track => track.community).filter(Boolean))];
+    return communities.filter(community => 
+      communityNames.includes(community.name)
+    );
+  };
+
   if (isLoading || tracksLoading) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
@@ -98,6 +114,8 @@ export const ExplorePage: React.FC = () => {
   // Show category creators page
   if (selectedCategory) {
     const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
+    const communitiesInCategory = selectedCategoryData ? getCommunitiesInCategory(selectedCategoryData.name) : [];
+    
     return (
       <div className="bg-white min-h-screen">
         <div className="px-4 pt-6 pb-4">
@@ -111,36 +129,60 @@ export const ExplorePage: React.FC = () => {
               </svg>
             </button>
             <h1 className="text-2xl font-bold text-black">
-              {selectedCategoryData?.name.toUpperCase()} CREATORS
+              {selectedCategoryData?.name.toUpperCase()}
             </h1>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            {filteredCreators.map(creator => (
-              <div
-                key={creator.id}
-                onClick={() => navigate(`/creators/${creator.id}`, { 
-                  state: { from: '/explore' } 
-                })}
-                className="bg-white rounded-xl border p-4 hover:shadow-md transition-all cursor-pointer"
-              >
-                <img
-                  src={creator.image || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop`}
-                  alt={creator.name}
-                  className="w-16 h-16 rounded-full mx-auto mb-3 object-cover"
-                />
-                <h3 className="font-semibold text-gray-900 text-center text-sm">{creator.name}</h3>
-                <p className="text-xs text-gray-500 text-center mt-1">{creator.followerCount.toLocaleString()} followers</p>
-                {creator.bio && (
-                  <p className="text-xs text-gray-600 text-center mt-2 line-clamp-2">{creator.bio}</p>
-                )}
+          {/* Creators Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-black mb-4">CREATORS</h2>
+            <div className="grid grid-cols-2 gap-4">
+              {filteredCreators.map(creator => (
+                <div
+                  key={creator.id}
+                  onClick={() => navigate(`/creators/${creator.id}`, { 
+                    state: { from: '/explore' } 
+                  })}
+                  className="bg-white rounded-xl border p-4 hover:shadow-md transition-all cursor-pointer"
+                >
+                  <img
+                    src={creator.image || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop`}
+                    alt={creator.name}
+                    className="w-16 h-16 rounded-full mx-auto mb-3 object-cover"
+                  />
+                  <h3 className="font-semibold text-gray-900 text-center text-sm">{creator.name}</h3>
+                  <p className="text-xs text-gray-500 text-center mt-1">{creator.followerCount.toLocaleString()} followers</p>
+                  {creator.bio && (
+                    <p className="text-xs text-gray-600 text-center mt-2 line-clamp-2">{creator.bio}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {filteredCreators.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No creators found in this category yet.</p>
               </div>
-            ))}
+            )}
           </div>
 
-          {filteredCreators.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No creators found in this category yet.</p>
+          {/* Communities Section */}
+          {communitiesInCategory.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-black mb-4">
+                COMMUNITIES IN {selectedCategoryData?.name.toUpperCase()}
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                {communitiesInCategory.map(community => (
+                  <CommunityCard
+                    key={community.id}
+                    community={community}
+                    onClick={() => navigate(`/communities/${community.id}`, { 
+                      state: { from: '/explore' } 
+                    })}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -178,7 +220,7 @@ export const ExplorePage: React.FC = () => {
             <TrackCard 
               track={getFeaturedTrack()!} 
               showSaveButton 
-              onClick={() => navigate(`/tracks/${getFeaturedTrack()?.id}`)}
+              onClick={() => navigate(`/tracks/${getFeaturedTrack()?.id}`, { state: { from: '/explore' } })}
             />
           </div>
         )}

@@ -43,11 +43,13 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
         <img 
           src={track.main_image.url} 
           alt={track.title}
-          className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+          className="w-20 h-20 rounded-lg object-contain flex-shrink-0"
           onError={(e) => {
             logger.error('Image load error for:', track.title, track.main_image.url);
             // Fallback to a default image or keep current src
-            e.currentTarget.src = 'https://via.placeholder.com/80?text=Audio';
+            e.currentTarget.src = 'https://picsum.photos/80/80?random=' + track.id;
+            // Prevent further error events
+            e.currentTarget.onerror = null;
           }}
           onLoad={() => {
             logger.debug('Image loaded successfully for:', track.title, track.main_image.url);

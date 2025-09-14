@@ -4,36 +4,46 @@ import { useNavigate } from 'react-router-dom';
 import { SearchBar } from '../components/SearchBar';
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
-import { creatorService } from '../services/database';
+import { CommunityCard } from '../components/CommunityCard';
+import { creatorService, communityService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
-import { Creator } from '../types';
+import { Creator, Community } from '../types';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [featuredCreators, setFeaturedCreators] = useState<Creator[]>([]);
+  const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
-  const featuredTracks = audioTracks.slice(0, 3);
+  const featuredTracks = React.useMemo(() => 
+    audioTracks.slice(0, 3), 
+    [audioTracks]
+  );
 
   React.useEffect(() => {
     setTracks(audioTracks);
   }, [setTracks, audioTracks]);
 
   React.useEffect(() => {
-    const loadCreators = async () => {
+    const loadData = async () => {
       try {
-        const creators = await creatorService.getAll();
+        const [creators, communities] = await Promise.all([
+          creatorService.getAll(),
+          communityService.getAll()
+        ]);
         setFeaturedCreators(creators.slice(0, 10)); // Get more creators for smooth scrolling
+        setFeaturedCommunities(communities.slice(0, 4)); // Get 4 communities for homepage
       } catch (error) {
-        logger.error('Failed to load creators:', error);
+        logger.error('Failed to load data:', error);
         setFeaturedCreators([]);
+        setFeaturedCommunities([]);
       }
     };
-    loadCreators();
+    loadData();
   }, []);
 
   // Scroll to top when loading completes
@@ -43,9 +53,12 @@ export const HomePage: React.FC = () => {
     }
   }, [isLoading]);
 
-  const filteredTracks = audioTracks.filter(track =>
-    track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    track.creator.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTracks = React.useMemo(() => 
+    audioTracks.filter(track =>
+      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      track.creator.toLowerCase().includes(searchQuery.toLowerCase())
+    ), 
+    [audioTracks, searchQuery]
   );
 
 
@@ -213,14 +226,14 @@ export const HomePage: React.FC = () => {
               key={track.id} 
               track={track} 
               showSaveButton 
-              onClick={() => navigate(`/tracks/${track.id}`)}
+              onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
             />
           )) : featuredTracks.map(track => (
             <TrackCard 
               key={track.id} 
               track={track} 
               showSaveButton 
-              onClick={() => navigate(`/tracks/${track.id}`)}
+              onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
             />
           ))}
         </div>
@@ -275,6 +288,37 @@ export const HomePage: React.FC = () => {
           <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
         </div>
 
+      </section>
+
+      {/* Recommended Communities */}
+      <section>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">Recommended Communities</h2>
+          <button 
+            onClick={() => navigate('/communities')}
+            className="text-purple-600 text-sm font-medium hover:text-purple-700"
+          >
+            View All
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {featuredCommunities.map((community) => (
+            <CommunityCard 
+              key={community.id}
+              community={community} 
+              onClick={() => navigate(`/communities/${community.id}`, { 
+                state: { from: '/home' } 
+              })}
+            />
+          ))}
+        </div>
+
+        {featuredCommunities.length === 0 && !isLoading && (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No communities available at the moment.</p>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage';
 import { ExplorePage } from './pages/ExplorePage';
 import { LibraryPage } from './pages/LibraryPage';
 import { CreatorProfilePage } from './pages/CreatorProfilePage';
+import { CommunityDetailPage } from './pages/CommunityDetailPage';
 import { TrackDetailPage } from './pages/TrackDetailPage';
 
 export const router = createBrowserRouter([
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: 'creators/:creatorId',
         element: <CreatorProfilePage />,
+      },
+      {
+        path: 'communities/:communityId',
+        element: <CommunityDetailPage />,
       },
       {
         path: 'tracks/:trackId',

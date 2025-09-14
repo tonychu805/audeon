@@ -1,6 +1,6 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, Heart, Calendar, User, Share, Download, MoreHorizontal } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
@@ -10,6 +10,7 @@ import { Creator } from '../types';
 export const TrackDetailPage: React.FC = () => {
   const { trackId } = useParams<{ trackId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentTrack, isPlaying, playTrack, togglePlayPause, savedTracks, toggleSaved } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
@@ -42,8 +43,39 @@ export const TrackDetailPage: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <button 
-            onClick={() => navigate(-1)}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              logger.debug('Track back button clicked');
+              
+              // Get the previous path from location state
+              const from = location.state?.from;
+              logger.debug('Track location state from:', from);
+              
+              // Smart navigation to prevent loops
+              const currentPath = `/tracks/${trackId}`;
+              if (from && from === currentPath) {
+                logger.debug('Detected circular reference, navigating to home to prevent loop');
+                navigate('/home', { replace: true });
+              } else if (from && (from.includes('/communities/') || from.includes('/creators/'))) {
+                logger.debug('Navigating back to community/creator page:', from);
+                navigate(from, { replace: true });
+              } else if (from) {
+                logger.debug('Navigating back to:', from);
+                navigate(from, { replace: true });
+              } else {
+                // Fallback: try browser history, then home
+                logger.debug('No state found, trying browser history');
+                if (document.referrer && document.referrer.includes(window.location.origin)) {
+                  navigate(-1);
+                } else {
+                  logger.debug('Using home as fallback');
+                  navigate('/home', { replace: true });
+                }
+              }
+            }}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+            type="button"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
@@ -91,8 +123,39 @@ export const TrackDetailPage: React.FC = () => {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button 
-          onClick={() => navigate(-1)}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            logger.debug('Track back button clicked');
+            
+            // Get the previous path from location state
+            const from = location.state?.from;
+            logger.debug('Track location state from:', from);
+            
+            // Smart navigation to prevent loops
+            const currentPath = `/tracks/${trackId}`;
+            if (from && from === currentPath) {
+              logger.debug('Detected circular reference, navigating to home to prevent loop');
+              navigate('/home', { replace: true });
+            } else if (from && (from.includes('/communities/') || from.includes('/creators/'))) {
+              logger.debug('Navigating back to community/creator page:', from);
+              navigate(from, { replace: true });
+            } else if (from) {
+              logger.debug('Navigating back to:', from);
+              navigate(from, { replace: true });
+            } else {
+              // Fallback: try browser history, then home
+              logger.debug('No state found, trying browser history');
+              if (document.referrer && document.referrer.includes(window.location.origin)) {
+                navigate(-1);
+              } else {
+                logger.debug('Using home as fallback');
+                navigate('/home', { replace: true });
+              }
+            }
+          }}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+          type="button"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
@@ -104,7 +167,7 @@ export const TrackDetailPage: React.FC = () => {
           <img 
             src={track.main_image?.url || '/default-cover.jpg'} 
             alt={track.title}
-            className="w-full h-64 object-cover rounded-2xl"
+            className="w-full max-h-96 object-contain rounded-2xl"
           />
         </div>
 

@@ -19,8 +19,10 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onClick }) =>
         className="w-full h-32 object-cover rounded-lg mb-3"
         onError={(e) => {
           logger.error('Creator image load error:', creator.name, creator.image);
-          // Hide broken image or use placeholder
-          e.currentTarget.style.display = 'none';
+          // Use placeholder for broken images
+          e.currentTarget.src = 'https://picsum.photos/150/150?random=' + creator.id;
+          // Prevent further error events
+          e.currentTarget.onerror = null;
         }}
         onLoad={() => {
           logger.debug('Creator image loaded:', creator.name);

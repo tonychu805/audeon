@@ -108,7 +108,7 @@ export const AudioPlayer: React.FC = () => {
           <img 
             src={currentTrack.main_image.url} 
             alt={currentTrack.creator}
-            className="w-64 h-64 rounded-2xl object-cover mb-8 shadow-2xl"
+            className="w-64 h-64 rounded-2xl object-contain mb-8 shadow-2xl"
           />
           
           <div className="text-center mb-8">

@@ -543,36 +543,36 @@ export const categoryService = {
         try {
           const basicCategories = await this.getAll();
         
-        // Transform basic categories to match CategoryWithAssets interface
-        return basicCategories.map(category => {
-          const heroUrl = category.hero_image_path 
-            ? getStorageUrl('category_images', category.hero_image_path)
-            : categoryStorage.getFallbackImageUrl(category.name);
+          // Transform basic categories to match CategoryWithAssets interface
+          return basicCategories.map(category => {
+            const heroUrl = category.hero_image_path 
+              ? getStorageUrl('category_images', category.hero_image_path)
+              : categoryStorage.getFallbackImageUrl(category.name);
+              
+            // Debug logging for data science
+            if (category.name.toLowerCase() === 'data science') {
+              console.log('Fallback method debug:', {
+                categoryName: category.name,
+                hero_image_path: category.hero_image_path,
+                generatedHeroUrl: heroUrl,
+                getStorageUrlResult: category.hero_image_path ? getStorageUrl('category_images', category.hero_image_path) : 'no path'
+              });
+            }
             
-          // Debug logging for data science
-          if (category.name.toLowerCase() === 'data science') {
-            console.log('Fallback method debug:', {
-              categoryName: category.name,
-              hero_image_path: category.hero_image_path,
-              generatedHeroUrl: heroUrl,
-              getStorageUrlResult: category.hero_image_path ? getStorageUrl('category_images', category.hero_image_path) : 'no path'
-            });
-          }
-          
-          return {
-            ...category,
-            // Use hero_image_path if available, fallback to Unsplash
-            heroImageUrl: heroUrl,
-            mobileImageUrl: category.mobile_image_path
-              ? getStorageUrl('category_images', category.mobile_image_path)
-              : categoryStorage.getFallbackImageUrl(category.name),
-            thumbnailUrl: categoryStorage.getFallbackImageUrl(category.name),
-            assets: [],
-            subcategories: [],
-            // Maintain backward compatibility
-            icon: category.icon || '🎯'
-          };
-        });
+            return {
+              ...category,
+              // Use hero_image_path if available, fallback to Unsplash
+              heroImageUrl: heroUrl,
+              mobileImageUrl: category.mobile_image_path
+                ? getStorageUrl('category_images', category.mobile_image_path)
+                : categoryStorage.getFallbackImageUrl(category.name),
+              thumbnailUrl: categoryStorage.getFallbackImageUrl(category.name),
+              assets: [],
+              subcategories: [],
+              // Maintain backward compatibility
+              icon: category.icon || '🎯'
+            };
+          });
         } catch (fallbackError) {
           console.error('Fallback method also failed:', fallbackError);
           return [];

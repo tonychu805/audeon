@@ -9,7 +9,10 @@ export const LibraryPage: React.FC = () => {
   const { savedTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
 
-  const savedAudioTracks = audioTracks.filter(track => savedTracks.includes(track.id));
+  const savedAudioTracks = React.useMemo(() => 
+    audioTracks.filter(track => savedTracks.includes(track.id)), 
+    [audioTracks, savedTracks]
+  );
 
   if (isLoading) {
     return (
@@ -36,7 +39,7 @@ export const LibraryPage: React.FC = () => {
               key={track.id} 
               track={track} 
               showSaveButton 
-              onClick={() => navigate(`/tracks/${track.id}`)}
+              onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/library' } })}
             />
           ))}
         </div>

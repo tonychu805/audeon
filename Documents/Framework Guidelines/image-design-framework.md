@@ -38,10 +38,16 @@ This document establishes comprehensive guidelines for image usage, management, 
 - **Max file size**: 40KB
 
 ### Track/Content Images
-- **Size**: 1200x630px (Open Graph standard)
+- **Recommended Size**: Near-square ratios (0.8:1 to 1.2:1 optimal)
+- **Database Defaults**: 1200x630px (Open Graph standard) 
+- **Optimal Ratios**: 
+  - **Best**: 1:1 (square) for consistent display across all UI components
+  - **Good**: 0.9:1 to 1.1:1 (near-square) with minimal padding
+  - **Acceptable**: Any ratio (system handles 1:3 to 3:1 gracefully)
 - **Format**: WebP preferred, JPG fallback
-- **Usage**: Content previews, social sharing
+- **Usage**: TrackCard thumbnails (80×80px), AudioPlayer (256×256px), TrackDetailPage (responsive)
 - **Max file size**: 200KB
+- **Storage**: Supabase Storage with CDN delivery (preferred over external URLs)
 
 ---
 
@@ -86,6 +92,16 @@ category_images/
 │       ├── default-hero.jpg
 │       ├── default-mobile.jpg
 │       └── default-thumbnail.jpg
+
+track_images/                  # Track/Content images
+├── tracks/
+│   ├── {track-id}/
+│   │   ├── main.webp         # Primary track image
+│   │   ├── main.jpg          # JPG fallback
+│   │   └── thumbnail.webp    # Small thumbnail (optional)
+│   └── templates/            # Default track images
+│       ├── default-track.jpg
+│       └── placeholder.svg
 ```
 
 ### File Naming Conventions
@@ -93,6 +109,53 @@ category_images/
 - **Descriptive**: `business`, `data-science`, `product-management`
 - **Consistent**: Follow exact pattern across all categories
 - **Version safe**: Avoid spaces, special characters
+
+---
+
+## 🖥️ UI Implementation Guidelines
+
+### CSS Object-fit Strategy
+
+#### Track Images (Responsive Display)
+```css
+/* Optimized for any aspect ratio */
+.track-thumbnail {
+  width: 80px;
+  height: 80px;
+  object-fit: contain; /* Shows full image, minimal padding */
+  border-radius: 8px;
+}
+
+.track-detail-image {
+  width: 100%;
+  max-height: 384px; /* max-h-96 */
+  object-fit: contain; /* Adapts to image ratio */
+  border-radius: 16px;
+}
+
+.audio-player-image {
+  width: 256px;
+  height: 256px;
+  object-fit: contain; /* Full image in square container */
+  border-radius: 16px;
+}
+```
+
+#### Category Images (Fixed Aspect Ratios)
+```css
+.category-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fills container, may crop */
+  aspect-ratio: 4/3;
+}
+```
+
+### Aspect Ratio Handling
+- **object-contain**: Use for track images to show complete content
+- **object-cover**: Use for category cards where cropping is acceptable
+- **max-height constraints**: Prevent layout breaks with tall images
+- **Flexible containers**: Allow natural aspect ratios when possible
 
 ---
 
