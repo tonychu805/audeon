@@ -141,7 +141,10 @@ export default async (request: Request, context: any) => {
   const trackMatch = url.pathname.match(/^\/tracks\/(\d+)$/);
   
   // If not a social crawler or not a track route, pass through
-  if (!isSocialCrawler(userAgent) || !trackMatch) {
+  // Also trigger if ?debug=1 is in the URL for testing
+  const isDebugMode = url.searchParams.has('debug');
+  
+  if ((!isSocialCrawler(userAgent) && !isDebugMode) || !trackMatch) {
     return context.next();
   }
 
