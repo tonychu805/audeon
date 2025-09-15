@@ -6,6 +6,10 @@
   function = "social-meta"
   path = "/tracks/*"
 
+[[edge_functions]]
+  function = "test"
+  path = "/test"
+
 [build.environment]
   NODE_VERSION = "20"
 
