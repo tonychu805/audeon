@@ -60,7 +60,6 @@ async function getTrackData(trackId: string): Promise<TrackData | null> {
         summary,
         full_content,
         release_date,
-        duration,
         main_image_url,
         creators:creator_id(name)
       `)
@@ -122,7 +121,7 @@ function generateHTML(track: TrackData, trackId: string, baseUrl: string): strin
   <meta name="twitter:image" content="${imageUrl}" />
   
   <!-- Music specific -->
-  <meta property="music:duration" content="${track.duration || '0:00'}" />
+  <meta property="music:duration" content="0:00" />
   <meta property="music:musician" content="${creatorName}" />
   <meta property="music:release_date" content="${track.release_date || ''}" />
 </head>
