@@ -117,9 +117,10 @@ export const TrackDetailPage: React.FC = () => {
   };
 
   // Get current URL for sharing
-  const currentUrl = `${window.location.origin}/tracks/${trackId}`;
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://audeon.netlify.app';
+  const currentUrl = `${baseUrl}/tracks/${trackId}`;
   const trackDescription = track.summary || track.full_content || `Listen to ${track.title} by ${track.creator}`;
-  const trackImage = track.main_image?.url || `${window.location.origin}/default-cover.jpg`;
+  const trackImage = track.main_image?.url || `${baseUrl}/default-cover.jpg`;
 
   return (
     <>
