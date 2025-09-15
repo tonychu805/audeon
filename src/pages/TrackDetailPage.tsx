@@ -64,7 +64,7 @@ export const TrackDetailPage: React.FC = () => {
                 navigate(from, { replace: true });
               } else {
                 logger.debug('No state found, trying browser history');
-                if (document.referrer && document.referrer.includes(window.location.origin)) {
+                if (typeof window !== 'undefined' && document.referrer && document.referrer.includes(window.location.origin)) {
                   navigate(-1);
                 } else {
                   logger.debug('Using home as fallback');
@@ -174,7 +174,7 @@ export const TrackDetailPage: React.FC = () => {
                 navigate(from, { replace: true });
               } else {
                 logger.debug('No state found, trying browser history');
-                if (document.referrer && document.referrer.includes(window.location.origin)) {
+                if (typeof window !== 'undefined' && document.referrer && document.referrer.includes(window.location.origin)) {
                   navigate(-1);
                 } else {
                   logger.debug('Using home as fallback');

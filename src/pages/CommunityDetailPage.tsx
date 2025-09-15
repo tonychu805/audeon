@@ -131,7 +131,7 @@ export const CommunityDetailPage: React.FC = () => {
               navigate(from, { replace: true });
             } else {
               // Fallback: try browser history, then home
-              if (document.referrer && document.referrer.includes(window.location.origin)) {
+              if (typeof window !== 'undefined' && document.referrer && document.referrer.includes(window.location.origin)) {
                 navigate(-1);
               } else {
                 navigate('/home', { replace: true });
