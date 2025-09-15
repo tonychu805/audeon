@@ -7,7 +7,7 @@
   path = "/tracks/*"
 
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "20"
 
 # Make sure environment variables are available to Edge Functions
 [context.production.environment]
