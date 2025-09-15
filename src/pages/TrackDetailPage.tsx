@@ -1,19 +1,12 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Play, Pause, Heart, Calendar, User, Share, Download, MoreHorizontal } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 import { creatorService } from '../services/database';
 import { Creator } from '../types';
-
-export const import { logger } from '../utils/logger';
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Play, Pause, Heart, Calendar, User, Share, Download, MoreHorizontal } from 'lucide-react';
-import { usePlayer } from '../context/PlayerContext';
-import { useAudioTracks } from '../hooks/useAudioTracks';
 import { creatorService } from '../services/database';
 import { Creator } from '../types';
 
