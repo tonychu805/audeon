@@ -8,3 +8,8 @@
 
 [build.environment]
   NODE_VERSION = "18"
+
+# Make sure environment variables are available to Edge Functions
+[context.production.environment]
+  VITE_SUPABASE_URL = "${VITE_SUPABASE_URL}"
+  VITE_SUPABASE_ANON_KEY = "${VITE_SUPABASE_ANON_KEY}"
