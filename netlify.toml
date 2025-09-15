@@ -2,9 +2,9 @@
   publish = "dist"
   command = "npm run build"
 
-[[edge_functions]]
-  function = "social-meta"
-  path = "/tracks/*"
+# [[edge_functions]]
+#   function = "social-meta"
+#   path = "/tracks/*"
 
 [[edge_functions]]
   function = "test"
