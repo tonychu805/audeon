@@ -1,5 +1,5 @@
 import { logger } from '../utils/logger';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
@@ -15,12 +15,88 @@ export const HomePage: React.FC = () => {
   const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [communityScrollPosition, setCommunityScrollPosition] = useState(0);
+  const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
+  const normalizeCategoryKey = (rawCategory?: string | null) => {
+    if (!rawCategory) return '';
+    const value = rawCategory.toLowerCase();
+    if (value.includes('product')) return 'product';
+    if (value.includes('data')) return 'data';
+    if (value.includes('psychology')) return 'psychology';
+    if (value.includes('marketing')) return 'marketing';
+    if (value.includes('finance')) return 'finance';
+    return value;
+  };
+
+  const uniqueCategories = React.useMemo(() => {
+    const defaultCategories = ['data', 'finance', 'marketing', 'psychology', 'product'];
+
+    const categoryMap = new Map<string, number>();
+    audioTracks.forEach(track => {
+      const key = normalizeCategoryKey(track.category);
+      if (key) {
+        categoryMap.set(key, (categoryMap.get(key) ?? 0) + 1);
+      }
+    });
+
+    const dynamicCategories = Array.from(categoryMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([key]) => key);
+
+    const orderedCategories: string[] = [];
+    const seen = new Set<string>();
+
+    const addCategory = (category: string) => {
+      const key = normalizeCategoryKey(category);
+      if (key && !seen.has(key)) {
+        orderedCategories.push(key);
+        seen.add(key);
+      }
+    };
+
+    defaultCategories.forEach(addCategory);
+    dynamicCategories.forEach(addCategory);
+
+    return ['all', ...orderedCategories];
+  }, [audioTracks]);
+
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const filteredTracks = React.useMemo(() => {
+    if (selectedCategory === 'all') {
+      return audioTracks;
+    }
+
+    return audioTracks.filter(track => normalizeCategoryKey(track.category) === selectedCategory);
+  }, [audioTracks, selectedCategory]);
+
+  const filteredCreators = React.useMemo(() => {
+    if (selectedCategory === 'all') {
+      return featuredCreators;
+    }
+
+    return featuredCreators.filter(creator => normalizeCategoryKey(creator.category) === selectedCategory);
+  }, [featuredCreators, selectedCategory]);
+
+  const filteredCommunities = React.useMemo(() => {
+    if (selectedCategory === 'all') {
+      return featuredCommunities;
+    }
+
+    const matchingCommunityNames = new Set(
+      filteredTracks
+        .map(track => track.community)
+        .filter(Boolean)
+    );
+
+    return featuredCommunities.filter(community => matchingCommunityNames.has(community.name));
+  }, [filteredTracks, featuredCommunities, selectedCategory]);
+
   const featuredTracks = React.useMemo(() => 
-    audioTracks.slice(0, 5), 
-    [audioTracks]
+    filteredTracks.slice(0, 5), 
+    [filteredTracks]
   );
 
   React.useEffect(() => {
@@ -70,6 +146,16 @@ export const HomePage: React.FC = () => {
   const [communityLastDragPosition, setCommunityLastDragPosition] = useState(0);
   const [communityVelocity, setCommunityVelocity] = useState(0);
   const [isCommunityDecelerating, setIsCommunityDecelerating] = useState(false);
+
+  const [isCategoryDragging, setIsCategoryDragging] = useState(false);
+  const [isCategoryMouseDown, setIsCategoryMouseDown] = useState(false);
+  const [categoryDragStart, setCategoryDragStart] = useState(0);
+  const [categoryDragStartScrollPosition, setCategoryDragStartScrollPosition] = useState(0);
+  const [categoryLastDragTime, setCategoryLastDragTime] = useState(0);
+  const [categoryLastDragPosition, setCategoryLastDragPosition] = useState(0);
+  const [categoryVelocity, setCategoryVelocity] = useState(0);
+  const [isCategoryDecelerating, setIsCategoryDecelerating] = useState(false);
+  const categoryContainerRef = useRef<HTMLDivElement | null>(null);
 
   const DRAG_THRESHOLD = 5; // pixels before considering it a drag
   const MOMENTUM_FACTOR = 0.95; // Deceleration factor (0-1, closer to 1 = less friction)
@@ -182,7 +268,7 @@ export const HomePage: React.FC = () => {
 
     const animationFrame = requestAnimationFrame(() => {
       setScrollPosition(currentPosition => {
-        const maxScroll = Math.max(0, (featuredCreators.length - 3) * 160); // Account for actual card width
+        const maxScroll = Math.max(0, (filteredCreators.length - 3) * 160); // Account for actual card width
         const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + velocity));
         return newPosition;
       });
@@ -195,7 +281,7 @@ export const HomePage: React.FC = () => {
     });
 
     return () => cancelAnimationFrame(animationFrame);
-  }, [isDecelerating, velocity, featuredCreators.length]);
+  }, [isDecelerating, velocity, filteredCreators.length]);
 
   const handleCommunityMouseDown = (e: React.MouseEvent) => {
     setIsCommunityMouseDown(true);
@@ -298,7 +384,7 @@ export const HomePage: React.FC = () => {
 
     const animationFrame = requestAnimationFrame(() => {
       setCommunityScrollPosition(currentPosition => {
-        const maxScroll = Math.max(0, (featuredCommunities.length - 2) * 220);
+        const maxScroll = Math.max(0, (filteredCommunities.length - 2) * 220);
         const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + communityVelocity));
         return newPosition;
       });
@@ -310,7 +396,155 @@ export const HomePage: React.FC = () => {
     });
 
     return () => cancelAnimationFrame(animationFrame);
-  }, [isCommunityDecelerating, communityVelocity, featuredCommunities.length]);
+  }, [isCommunityDecelerating, communityVelocity, filteredCommunities.length]);
+
+  const handleCategoryMouseDown = (e: React.MouseEvent) => {
+    setIsCategoryMouseDown(true);
+    setCategoryDragStart(e.clientX);
+    const container = categoryContainerRef.current;
+    const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
+    setCategoryDragStartScrollPosition(Math.max(0, Math.min(maxScroll, categoryScrollPosition)));
+    setCategoryLastDragTime(Date.now());
+    setCategoryLastDragPosition(e.clientX);
+    setIsCategoryDecelerating(false);
+  };
+
+  const handleCategoryMouseMove = (e: React.MouseEvent) => {
+    if (!isCategoryMouseDown) return;
+
+    const currentTime = Date.now();
+    const currentPosition = e.clientX;
+    const dragDistance = Math.abs(categoryDragStart - currentPosition);
+
+    if (dragDistance > DRAG_THRESHOLD && !isCategoryDragging) {
+      setIsCategoryDragging(true);
+    }
+
+    if (isCategoryDragging) {
+      e.preventDefault();
+      const container = categoryContainerRef.current;
+      const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
+      const scrollDistance = categoryDragStart - currentPosition;
+      const newPosition = Math.max(0, Math.min(maxScroll, categoryDragStartScrollPosition + scrollDistance));
+      setCategoryScrollPosition(newPosition);
+
+      const timeDelta = currentTime - categoryLastDragTime;
+      const positionDelta = currentPosition - categoryLastDragPosition;
+      if (timeDelta > 0) {
+        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
+        setCategoryVelocity(newVelocity);
+      }
+
+      setCategoryLastDragTime(currentTime);
+      setCategoryLastDragPosition(currentPosition);
+    }
+  };
+
+  const handleCategoryMouseUp = () => {
+    if (isCategoryDragging && Math.abs(categoryVelocity) > MIN_VELOCITY) {
+      setIsCategoryDecelerating(true);
+    }
+    setIsCategoryMouseDown(false);
+    setIsCategoryDragging(false);
+  };
+
+  const handleCategoryTouchStart = (e: React.TouchEvent) => {
+    setIsCategoryMouseDown(true);
+    setCategoryDragStart(e.touches[0].clientX);
+    const container = categoryContainerRef.current;
+    const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
+    setCategoryDragStartScrollPosition(Math.max(0, Math.min(maxScroll, categoryScrollPosition)));
+    setCategoryLastDragTime(Date.now());
+    setCategoryLastDragPosition(e.touches[0].clientX);
+    setIsCategoryDecelerating(false);
+  };
+
+  const handleCategoryTouchMove = (e: React.TouchEvent) => {
+    if (!isCategoryMouseDown) return;
+
+    const currentTime = Date.now();
+    const currentPosition = e.touches[0].clientX;
+    const dragDistance = Math.abs(categoryDragStart - currentPosition);
+
+    if (dragDistance > DRAG_THRESHOLD && !isCategoryDragging) {
+      setIsCategoryDragging(true);
+    }
+
+    if (isCategoryDragging) {
+      const container = categoryContainerRef.current;
+      const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
+      const scrollDistance = categoryDragStart - currentPosition;
+      const newPosition = Math.max(0, Math.min(maxScroll, categoryDragStartScrollPosition + scrollDistance));
+      setCategoryScrollPosition(newPosition);
+
+      const timeDelta = currentTime - categoryLastDragTime;
+      const positionDelta = currentPosition - categoryLastDragPosition;
+      if (timeDelta > 0) {
+        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
+        setCategoryVelocity(newVelocity);
+      }
+
+      setCategoryLastDragTime(currentTime);
+      setCategoryLastDragPosition(currentPosition);
+    }
+  };
+
+  const handleCategoryTouchEnd = () => {
+    if (isCategoryDragging && Math.abs(categoryVelocity) > MIN_VELOCITY) {
+      setIsCategoryDecelerating(true);
+    }
+    setIsCategoryMouseDown(false);
+    setIsCategoryDragging(false);
+  };
+
+  useEffect(() => {
+    if (!isCategoryDecelerating || Math.abs(categoryVelocity) < MIN_VELOCITY) {
+      if (isCategoryDecelerating) {
+        setIsCategoryDecelerating(false);
+      }
+      return;
+    }
+
+    const animationFrame = requestAnimationFrame(() => {
+      setCategoryScrollPosition(currentPosition => {
+        const container = categoryContainerRef.current;
+        const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
+        const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + categoryVelocity));
+        return newPosition;
+      });
+
+      setCategoryVelocity(currentVelocity => {
+        const newVelocity = currentVelocity * MOMENTUM_FACTOR;
+        return Math.abs(newVelocity) < MIN_VELOCITY ? 0 : newVelocity;
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isCategoryDecelerating, categoryVelocity, uniqueCategories.length]);
+
+  useEffect(() => {
+    const container = categoryContainerRef.current;
+    if (!container) {
+      return;
+    }
+    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+    setCategoryScrollPosition(prev => Math.max(0, Math.min(maxScroll, prev)));
+  }, [uniqueCategories.length, selectedCategory]);
+
+  useEffect(() => {
+    setScrollPosition(0);
+    setCommunityScrollPosition(0);
+    setCategoryScrollPosition(0);
+    setIsDragging(false);
+    setIsDecelerating(false);
+    setIsCommunityDragging(false);
+    setIsCommunityDecelerating(false);
+    setIsCategoryDragging(false);
+    setIsCategoryDecelerating(false);
+    setVelocity(0);
+    setCommunityVelocity(0);
+    setCategoryVelocity(0);
+  }, [selectedCategory, uniqueCategories.length]);
 
   if (isLoading) {
     return (
@@ -325,23 +559,76 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Audeon</h1>
-        <p className="text-gray-600">Discover and listen to premium audio content</p>
+      <div className="flex items-center gap-4 pb-2">
+        <img
+          src="https://i.pravatar.cc/48?img=5"
+          alt="User avatar"
+          className="w-10 h-10 rounded-full border border-purple-200 shadow-sm flex-shrink-0"
+        />
+        <div className="relative flex-1 overflow-hidden" ref={categoryContainerRef}>
+          <div
+            className="flex gap-2 cursor-grab active:cursor-grabbing select-none items-center"
+            style={{
+              transform: `translateX(-${categoryScrollPosition}px)`,
+              transition: (isCategoryDragging || isCategoryDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            }}
+            onMouseDown={handleCategoryMouseDown}
+            onMouseMove={handleCategoryMouseMove}
+            onMouseUp={handleCategoryMouseUp}
+            onMouseLeave={handleCategoryMouseUp}
+            onTouchStart={handleCategoryTouchStart}
+            onTouchMove={handleCategoryTouchMove}
+            onTouchEnd={handleCategoryTouchEnd}
+          >
+            {uniqueCategories.map(category => {
+              const displayName = category === 'all'
+                ? 'All'
+                : category
+                    .split(/[\s_-]+/)
+                    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+                    .join(' ');
+              const isActive = selectedCategory === category;
+
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  onClick={() => setSelectedCategory(category)}
+                  className={`rounded-full px-3 py-1.5 text-sm whitespace-nowrap font-medium transition-colors border ${
+                    isActive
+                      ? 'bg-purple-600 border-purple-600 text-white shadow-md'
+                      : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  aria-pressed={isActive}
+                >
+                  {displayName}
+                </button>
+              );
+            })}
+          </div>
+          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-px bg-gradient-to-r from-white to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-l from-white to-transparent" />
+        </div>
       </div>
 
       {/* Latest Releases */}
       <section>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Latest Releases</h2>
         <div className="space-y-3">
-          {featuredTracks.map(track => (
-            <TrackCard 
-              key={track.id} 
-              track={track} 
-              showSaveButton 
-              onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
-            />
-          ))}
+          {featuredTracks.length > 0 ? (
+            featuredTracks.map(track => (
+              <TrackCard 
+                key={track.id} 
+                track={track} 
+                showSaveButton 
+                onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
+              />
+            ))
+          ) : (
+            <div className="text-center py-6 border rounded-lg bg-gray-50">
+              <p className="text-gray-500 text-sm">No tracks available for this filter yet.</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -349,50 +636,56 @@ export const HomePage: React.FC = () => {
       <section>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Featured Creators</h2>
         
-        <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
-          <div 
-            className="flex space-x-4"
-            style={{
-              transform: `translateX(-${scrollPosition}px)`,
-              transition: (isDragging || isDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-            }}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-          >
-            {featuredCreators.map((creator) => (
-              <div
-                key={creator.id}
-                className="flex-shrink-0 w-40 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                style={{ 
-                  userSelect: 'none',
-                  WebkitUserSelect: 'none',
-                  pointerEvents: isDragging ? 'none' : 'auto'
-                }}
-              >
-                <CreatorCard 
-                  creator={creator} 
-                  onClick={() => {
-                    // Only navigate if we're not dragging
-                    if (!isDragging) {
-                      navigate(`/creators/${creator.id}`, { 
-                        state: { from: '/home' } 
-                      });
-                    }
+        {filteredCreators.length > 0 ? (
+          <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
+            <div 
+              className="flex space-x-4"
+              style={{
+                transform: `translateX(-${scrollPosition}px)`,
+                transition: (isDragging || isDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {filteredCreators.map((creator) => (
+                <div
+                  key={creator.id}
+                  className="flex-shrink-0 w-40 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  style={{ 
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    pointerEvents: isDragging ? 'none' : 'auto'
                   }}
-                />
-              </div>
-            ))}
+                >
+                  <CreatorCard 
+                    creator={creator} 
+                    onClick={() => {
+                      // Only navigate if we're not dragging
+                      if (!isDragging) {
+                        navigate(`/creators/${creator.id}`, { 
+                          state: { from: '/home' } 
+                        });
+                      }
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+            
+            {/* Gradient fade effects */}
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
           </div>
-          
-          {/* Gradient fade effects */}
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
-        </div>
+        ) : (
+          <div className="text-center py-8 border rounded-lg bg-gray-50">
+            <p className="text-gray-500 text-sm">No creators match this category yet.</p>
+          </div>
+        )}
 
       </section>
 
@@ -401,7 +694,7 @@ export const HomePage: React.FC = () => {
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-gray-900">Recommended Communities</h2>
         </div>
-        {featuredCommunities.length > 0 ? (
+        {filteredCommunities.length > 0 ? (
           <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
             <div
               className="flex space-x-4"
@@ -417,7 +710,7 @@ export const HomePage: React.FC = () => {
               onTouchMove={handleCommunityTouchMove}
               onTouchEnd={handleCommunityTouchEnd}
             >
-              {featuredCommunities.map((community) => (
+              {filteredCommunities.map((community) => (
                 <div
                   key={community.id}
                   className="flex-shrink-0 w-56 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
