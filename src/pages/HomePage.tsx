@@ -15,7 +15,6 @@ export const HomePage: React.FC = () => {
   const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [communityScrollPosition, setCommunityScrollPosition] = useState(0);
-  const [categoryScrollPosition, setCategoryScrollPosition] = useState(0);
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
@@ -56,8 +55,8 @@ export const HomePage: React.FC = () => {
       }
     };
 
-    defaultCategories.forEach(addCategory);
     dynamicCategories.forEach(addCategory);
+    defaultCategories.forEach(addCategory);
 
     return ['all', ...orderedCategories];
   }, [audioTracks]);
@@ -147,15 +146,8 @@ export const HomePage: React.FC = () => {
   const [communityVelocity, setCommunityVelocity] = useState(0);
   const [isCommunityDecelerating, setIsCommunityDecelerating] = useState(false);
 
-  const [isCategoryDragging, setIsCategoryDragging] = useState(false);
-  const [isCategoryMouseDown, setIsCategoryMouseDown] = useState(false);
-  const [categoryDragStart, setCategoryDragStart] = useState(0);
-  const [categoryDragStartScrollPosition, setCategoryDragStartScrollPosition] = useState(0);
-  const [categoryLastDragTime, setCategoryLastDragTime] = useState(0);
-  const [categoryLastDragPosition, setCategoryLastDragPosition] = useState(0);
-  const [categoryVelocity, setCategoryVelocity] = useState(0);
-  const [isCategoryDecelerating, setIsCategoryDecelerating] = useState(false);
   const categoryContainerRef = useRef<HTMLDivElement | null>(null);
+  const categoryButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const DRAG_THRESHOLD = 5; // pixels before considering it a drag
   const MOMENTUM_FACTOR = 0.95; // Deceleration factor (0-1, closer to 1 = less friction)
@@ -398,153 +390,28 @@ export const HomePage: React.FC = () => {
     return () => cancelAnimationFrame(animationFrame);
   }, [isCommunityDecelerating, communityVelocity, filteredCommunities.length]);
 
-  const handleCategoryMouseDown = (e: React.MouseEvent) => {
-    setIsCategoryMouseDown(true);
-    setCategoryDragStart(e.clientX);
-    const container = categoryContainerRef.current;
-    const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
-    setCategoryDragStartScrollPosition(Math.max(0, Math.min(maxScroll, categoryScrollPosition)));
-    setCategoryLastDragTime(Date.now());
-    setCategoryLastDragPosition(e.clientX);
-    setIsCategoryDecelerating(false);
-  };
-
-  const handleCategoryMouseMove = (e: React.MouseEvent) => {
-    if (!isCategoryMouseDown) return;
-
-    const currentTime = Date.now();
-    const currentPosition = e.clientX;
-    const dragDistance = Math.abs(categoryDragStart - currentPosition);
-
-    if (dragDistance > DRAG_THRESHOLD && !isCategoryDragging) {
-      setIsCategoryDragging(true);
-    }
-
-    if (isCategoryDragging) {
-      e.preventDefault();
-      const container = categoryContainerRef.current;
-      const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
-      const scrollDistance = categoryDragStart - currentPosition;
-      const newPosition = Math.max(0, Math.min(maxScroll, categoryDragStartScrollPosition + scrollDistance));
-      setCategoryScrollPosition(newPosition);
-
-      const timeDelta = currentTime - categoryLastDragTime;
-      const positionDelta = currentPosition - categoryLastDragPosition;
-      if (timeDelta > 0) {
-        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
-        setCategoryVelocity(newVelocity);
-      }
-
-      setCategoryLastDragTime(currentTime);
-      setCategoryLastDragPosition(currentPosition);
-    }
-  };
-
-  const handleCategoryMouseUp = () => {
-    if (isCategoryDragging && Math.abs(categoryVelocity) > MIN_VELOCITY) {
-      setIsCategoryDecelerating(true);
-    }
-    setIsCategoryMouseDown(false);
-    setIsCategoryDragging(false);
-  };
-
-  const handleCategoryTouchStart = (e: React.TouchEvent) => {
-    setIsCategoryMouseDown(true);
-    setCategoryDragStart(e.touches[0].clientX);
-    const container = categoryContainerRef.current;
-    const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
-    setCategoryDragStartScrollPosition(Math.max(0, Math.min(maxScroll, categoryScrollPosition)));
-    setCategoryLastDragTime(Date.now());
-    setCategoryLastDragPosition(e.touches[0].clientX);
-    setIsCategoryDecelerating(false);
-  };
-
-  const handleCategoryTouchMove = (e: React.TouchEvent) => {
-    if (!isCategoryMouseDown) return;
-
-    const currentTime = Date.now();
-    const currentPosition = e.touches[0].clientX;
-    const dragDistance = Math.abs(categoryDragStart - currentPosition);
-
-    if (dragDistance > DRAG_THRESHOLD && !isCategoryDragging) {
-      setIsCategoryDragging(true);
-    }
-
-    if (isCategoryDragging) {
-      const container = categoryContainerRef.current;
-      const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
-      const scrollDistance = categoryDragStart - currentPosition;
-      const newPosition = Math.max(0, Math.min(maxScroll, categoryDragStartScrollPosition + scrollDistance));
-      setCategoryScrollPosition(newPosition);
-
-      const timeDelta = currentTime - categoryLastDragTime;
-      const positionDelta = currentPosition - categoryLastDragPosition;
-      if (timeDelta > 0) {
-        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
-        setCategoryVelocity(newVelocity);
-      }
-
-      setCategoryLastDragTime(currentTime);
-      setCategoryLastDragPosition(currentPosition);
-    }
-  };
-
-  const handleCategoryTouchEnd = () => {
-    if (isCategoryDragging && Math.abs(categoryVelocity) > MIN_VELOCITY) {
-      setIsCategoryDecelerating(true);
-    }
-    setIsCategoryMouseDown(false);
-    setIsCategoryDragging(false);
-  };
-
   useEffect(() => {
-    if (!isCategoryDecelerating || Math.abs(categoryVelocity) < MIN_VELOCITY) {
-      if (isCategoryDecelerating) {
-        setIsCategoryDecelerating(false);
-      }
-      return;
-    }
+    const container = categoryContainerRef.current;
+    const button = categoryButtonRefs.current[selectedCategory];
+    if (!container || !button) return;
 
-    const animationFrame = requestAnimationFrame(() => {
-      setCategoryScrollPosition(currentPosition => {
-        const container = categoryContainerRef.current;
-        const maxScroll = container ? Math.max(0, container.scrollWidth - container.clientWidth) : 0;
-        const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + categoryVelocity));
-        return newPosition;
-      });
-
-      setCategoryVelocity(currentVelocity => {
-        const newVelocity = currentVelocity * MOMENTUM_FACTOR;
-        return Math.abs(newVelocity) < MIN_VELOCITY ? 0 : newVelocity;
-      });
+    button.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
     });
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isCategoryDecelerating, categoryVelocity, uniqueCategories.length]);
-
-  useEffect(() => {
-    const container = categoryContainerRef.current;
-    if (!container) {
-      return;
-    }
-    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
-    setCategoryScrollPosition(prev => Math.max(0, Math.min(maxScroll, prev)));
-  }, [uniqueCategories.length, selectedCategory]);
+  }, [selectedCategory, uniqueCategories.length]);
 
   useEffect(() => {
     setScrollPosition(0);
     setCommunityScrollPosition(0);
-    setCategoryScrollPosition(0);
     setIsDragging(false);
     setIsDecelerating(false);
     setIsCommunityDragging(false);
     setIsCommunityDecelerating(false);
-    setIsCategoryDragging(false);
-    setIsCategoryDecelerating(false);
     setVelocity(0);
     setCommunityVelocity(0);
-    setCategoryVelocity(0);
-  }, [selectedCategory, uniqueCategories.length]);
+  }, [selectedCategory]);
 
   if (isLoading) {
     return (
@@ -565,26 +432,14 @@ export const HomePage: React.FC = () => {
           alt="User avatar"
           className="w-10 h-10 rounded-full border border-purple-200 shadow-sm flex-shrink-0"
         />
-        <div className="relative flex-1 overflow-hidden" ref={categoryContainerRef}>
-          <div
-            className="flex gap-2 cursor-grab active:cursor-grabbing select-none items-center"
-            style={{
-              transform: `translateX(-${categoryScrollPosition}px)`,
-              transition: (isCategoryDragging || isCategoryDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-            }}
-            onMouseDown={handleCategoryMouseDown}
-            onMouseMove={handleCategoryMouseMove}
-            onMouseUp={handleCategoryMouseUp}
-            onMouseLeave={handleCategoryMouseUp}
-            onTouchStart={handleCategoryTouchStart}
-            onTouchMove={handleCategoryTouchMove}
-            onTouchEnd={handleCategoryTouchEnd}
-          >
-            {uniqueCategories.map(category => {
-              const displayName = category === 'all'
-                ? 'All'
-                : category
-                    .split(/[\s_-]+/)
+        <div ref={categoryContainerRef} className="flex-1 overflow-hidden">
+          <div className="no-scrollbar overflow-x-auto">
+            <div className="flex gap-2 items-center pr-4">
+              {uniqueCategories.map(category => {
+                const displayName = category === 'all'
+                  ? 'All'
+                  : category
+                      .split(/[\s_-]+/)
                     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
                     .join(' ');
               const isActive = selectedCategory === category;
@@ -592,6 +447,9 @@ export const HomePage: React.FC = () => {
               return (
                 <button
                   key={category}
+                  ref={el => {
+                    categoryButtonRefs.current[category] = el;
+                  }}
                   type="button"
                   onClick={() => setSelectedCategory(category)}
                   className={`rounded-full px-3 py-1.5 text-sm whitespace-nowrap font-medium transition-colors border ${
@@ -605,9 +463,8 @@ export const HomePage: React.FC = () => {
                 </button>
               );
             })}
+            </div>
           </div>
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-px bg-gradient-to-r from-white to-transparent" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-l from-white to-transparent" />
         </div>
       </div>
 
