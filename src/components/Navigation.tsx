@@ -6,7 +6,7 @@ interface NavigationProps {
   activeTab: string;
 }
 
-const NAV_HEIGHT_REM = 4; // 64px similar to Spotify
+const NAV_HEIGHT_REM = 3.75; // 60px similar to Spotify bottom dock
 
 export const Navigation: React.FC<NavigationProps> = ({ activeTab }) => {
   const tabs = [

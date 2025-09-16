@@ -211,17 +211,17 @@ export const AudioPlayer: React.FC = () => {
   return (
     <div
       data-testid="audio-player"
-      className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom,0px)+4.5rem)] mx-auto max-w-[480px] bg-gray-900 border-t border-gray-700 z-50 rounded-2xl shadow-[0_12px_32px_rgba(15,23,42,0.18)] overflow-hidden"
+      className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom,0px)+3.5rem)] mx-auto max-w-[480px] bg-gray-900 border border-gray-700 z-50 rounded-xl shadow-[0_10px_24px_rgba(15,23,42,0.16)] overflow-hidden"
     >
       <div 
         onClick={toggleExpanded}
-        className="flex items-center justify-between p-4 pb-3 cursor-pointer hover:bg-gray-800 transition-colors"
+        className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-800 transition-colors"
       >
         <div className="flex items-center space-x-3">
           <img 
             src={currentTrack.main_image.url} 
             alt={currentTrack.creator}
-            className="w-12 h-12 rounded-lg object-cover"
+            className="w-10 h-10 rounded-lg object-cover"
           />
           <div>
             <h3 className="font-semibold text-white text-sm line-clamp-1">{currentTrack.title}</h3>
@@ -229,7 +229,7 @@ export const AudioPlayer: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5">
           {/* Speed Controls */}
           <div className="relative">
             <button 
@@ -237,7 +237,7 @@ export const AudioPlayer: React.FC = () => {
                 e.stopPropagation();
                 setShowSpeedControls(!showSpeedControls);
               }}
-              className="p-2 text-gray-400 hover:text-white transition-colors text-xs font-medium"
+            className="p-1.5 text-gray-400 hover:text-white transition-colors text-xs font-medium"
             >
               {playbackSpeed}x
             </button>
@@ -268,7 +268,7 @@ export const AudioPlayer: React.FC = () => {
               e.stopPropagation();
               toggleSaved(currentTrack.id);
             }}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-1.5 rounded-full transition-colors ${
               isSaved 
                 ? 'text-red-500 hover:text-red-400' 
                 : 'text-gray-400 hover:text-red-500'
@@ -282,7 +282,7 @@ export const AudioPlayer: React.FC = () => {
               e.stopPropagation();
               previousTrack();
             }}
-            className="p-2 text-gray-300 hover:text-white transition-colors"
+            className="p-1.5 text-gray-300 hover:text-white transition-colors"
           >
             <SkipBack className="w-5 h-5" />
           </button>
@@ -302,7 +302,7 @@ export const AudioPlayer: React.FC = () => {
               e.stopPropagation();
               nextTrack();
             }}
-            className="p-2 text-gray-300 hover:text-white transition-colors"
+            className="p-1.5 text-gray-300 hover:text-white transition-colors"
           >
             <SkipForward className="w-5 h-5" />
           </button>
@@ -310,7 +310,7 @@ export const AudioPlayer: React.FC = () => {
       </div>
       
       {/* Interactive Progress Bar at Bottom */}
-      <div className="px-4 pb-1">
+      <div className="px-4 pb-1.5">
         <input
           type="range"
           min="0"
