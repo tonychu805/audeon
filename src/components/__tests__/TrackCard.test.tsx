@@ -1,12 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { screen, fireEvent, waitFor } from '@testing-library/react'
+import { screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { TrackCard } from '../TrackCard'
-import { renderWithProviders, expectAccessibleButton, isValidTimeFormat } from '../../test/utils/test-utils'
+import { renderWithProviders, isValidTimeFormat } from '../../test/utils/test-utils'
 import { trackService } from '../../services/database'
+import type { AudioTrack } from '../../types'
 
 describe('TrackCard Component', () => {
-  let testTrack: any
+  let testTrack: AudioTrack | undefined
 
   beforeEach(async () => {
     // Get real track data from database

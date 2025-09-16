@@ -1,7 +1,6 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SearchBar } from '../components/SearchBar';
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
 import { CommunityCard } from '../components/CommunityCard';
@@ -12,7 +11,6 @@ import { Creator, Community } from '../types';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
   const [featuredCreators, setFeaturedCreators] = useState<Creator[]>([]);
   const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -20,7 +18,7 @@ export const HomePage: React.FC = () => {
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
   const featuredTracks = React.useMemo(() => 
-    audioTracks.slice(0, 3), 
+    audioTracks.slice(0, 5), 
     [audioTracks]
   );
 
@@ -52,15 +50,6 @@ export const HomePage: React.FC = () => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
   }, [isLoading]);
-
-  const filteredTracks = React.useMemo(() => 
-    audioTracks.filter(track =>
-      track.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      track.creator.toLowerCase().includes(searchQuery.toLowerCase())
-    ), 
-    [audioTracks, searchQuery]
-  );
-
 
   // Momentum-based carousel state
   const [isDragging, setIsDragging] = useState(false);
@@ -216,24 +205,11 @@ export const HomePage: React.FC = () => {
         <p className="text-gray-600">Discover and listen to premium audio content</p>
       </div>
 
-      <SearchBar
-        value={searchQuery}
-        onChange={setSearchQuery}
-        placeholder="Search tracks, creators..."
-      />
-
       {/* Latest Releases */}
       <section>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Latest Releases</h2>
         <div className="space-y-3">
-          {searchQuery ? filteredTracks.slice(0, 5).map(track => (
-            <TrackCard 
-              key={track.id} 
-              track={track} 
-              showSaveButton 
-              onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
-            />
-          )) : featuredTracks.map(track => (
+          {featuredTracks.map(track => (
             <TrackCard 
               key={track.id} 
               track={track} 

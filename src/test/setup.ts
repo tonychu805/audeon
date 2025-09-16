@@ -59,7 +59,7 @@ global.URL.revokeObjectURL = vi.fn()
 
 // Suppress console warnings in tests unless needed
 const originalConsoleWarn = console.warn
-console.warn = (...args: any[]) => {
+console.warn = (...args: unknown[]) => {
   // Suppress React Router warnings in tests
   if (args[0]?.includes?.('React Router')) return
   originalConsoleWarn(...args)

@@ -217,7 +217,7 @@ describe('Database Services - Contract Tests', () => {
       ])
 
       // All should return null for invalid IDs
-      results.forEach((result: any) => {
+      results.forEach((result) => {
         expect(result).toBeNull()
       })
     })

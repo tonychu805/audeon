@@ -386,8 +386,9 @@ export const categoryService = {
           const assets = await categoryStorage.getCategoryAssets(category.id);
           
           // Get optimized URLs (with fallback to Unsplash during migration)
-          let heroImageUrl, mobileImageUrl, thumbnailUrl;
-          
+          let heroImageUrl: string;
+          let mobileImageUrl: string;
+
           // First check if we have direct image paths in the category record
           if (category.hero_image_path) {
             heroImageUrl = getStorageUrl('category_images', category.hero_image_path);
@@ -396,7 +397,7 @@ export const categoryService = {
           } else {
             heroImageUrl = categoryStorage.getFallbackImageUrl(category.name);
           }
-          
+
           if (category.mobile_image_path) {
             mobileImageUrl = getStorageUrl('category_images', category.mobile_image_path);
           } else if (assets.length > 0) {
@@ -404,8 +405,8 @@ export const categoryService = {
           } else {
             mobileImageUrl = heroImageUrl;
           }
-          
-          thumbnailUrl = heroImageUrl; // Use hero as thumbnail for now
+
+          const thumbnailUrl = heroImageUrl; // Use hero as thumbnail for now
 
           // Get subcategories
           const subcategories = categories.filter(cat => cat.parent_id === category.id);

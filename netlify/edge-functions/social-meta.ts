@@ -16,6 +16,10 @@ interface TrackData {
   creators?: { name: string } | null;
 }
 
+interface EdgeContext {
+  next(): Promise<Response>;
+}
+
 // Check if request is from a social media crawler
 function isSocialCrawler(userAgent: string): boolean {
   const crawlers = [
@@ -132,7 +136,7 @@ function generateHTML(track: TrackData, trackId: string, baseUrl: string): strin
 </html>`;
 }
 
-export default async (request: Request, context: any) => {
+export default async (request: Request, context: EdgeContext) => {
   const url = new URL(request.url);
   const userAgent = request.headers.get('user-agent') || '';
   

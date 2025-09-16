@@ -1,5 +1,23 @@
 import { test, expect } from '@playwright/test';
 
+type WebVitalsMetrics = {
+  lcp?: number;
+  fid?: number;
+  cls?: number;
+};
+
+type LayoutShiftEntry = PerformanceEntry & {
+  value: number;
+  hadRecentInput?: boolean;
+};
+
+type RequestRecord = {
+  url: string;
+  method: string;
+  resourceType: string;
+  timestamp: number;
+};
+
 test.describe('Performance Regression Testing', () => {
   test('Page load performance', async ({ page }) => {
     // Start timing
@@ -14,9 +32,9 @@ test.describe('Performance Regression Testing', () => {
     expect(loadTime).toBeLessThan(5000);
 
     // Check Core Web Vitals
-    const webVitals = await page.evaluate(() => {
-      return new Promise((resolve) => {
-        const vitals: any = {};
+    const webVitals = await page.evaluate<WebVitalsMetrics>(() => {
+      return new Promise<WebVitalsMetrics>((resolve) => {
+        const vitals: WebVitalsMetrics = {};
 
         // Largest Contentful Paint (LCP)
         new PerformanceObserver((list) => {
@@ -43,7 +61,7 @@ test.describe('Performance Regression Testing', () => {
         // Cumulative Layout Shift (CLS)
         let clsScore = 0;
         new PerformanceObserver((list) => {
-          for (const entry of list.getEntries() as any[]) {
+          for (const entry of list.getEntries() as LayoutShiftEntry[]) {
             if (!entry.hadRecentInput) {
               clsScore += entry.value;
             }
@@ -242,7 +260,7 @@ test.describe('Performance Regression Testing', () => {
 
   test('Network request optimization', async ({ page }) => {
     // Track network requests
-    const requests: any[] = [];
+    const requests: RequestRecord[] = [];
 
     page.on('request', (request) => {
       requests.push({
