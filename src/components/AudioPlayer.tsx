@@ -211,7 +211,7 @@ export const AudioPlayer: React.FC = () => {
   return (
     <div
       data-testid="audio-player"
-      className="fixed bottom-16 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40"
+      className="fixed left-0 right-0 bottom-[calc(env(safe-area-inset-bottom,0px)+6rem)] bg-gray-900 border-t border-gray-700 z-50"
     >
       <div 
         onClick={toggleExpanded}
