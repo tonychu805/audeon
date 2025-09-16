@@ -34,10 +34,10 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="pb-32 px-4 pt-6">
+      <main className="px-4 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+7rem)]">
         <Outlet />
       </main>
-      
+
       <AudioPlayer />
       <Navigation activeTab={activeTab} />
     </div>
