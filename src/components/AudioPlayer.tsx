@@ -209,7 +209,10 @@ export const AudioPlayer: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-16 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40">
+    <div
+      data-testid="audio-player"
+      className="fixed bottom-16 left-0 right-0 bg-gray-900 border-t border-gray-700 z-40"
+    >
       <div 
         onClick={toggleExpanded}
         className="flex items-center justify-between p-4 pb-3 cursor-pointer hover:bg-gray-800 transition-colors"

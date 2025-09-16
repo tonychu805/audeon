@@ -35,7 +35,8 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
     return date.toLocaleDateString();
   };
   return (
-    <div 
+    <div
+      data-testid="track-card"
       className="p-4 bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow cursor-pointer"
       onClick={onClick}
     >
@@ -72,21 +73,22 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
       
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-1">
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+          <span className="text-xs text-gray-700 bg-gray-200 px-2 py-1 rounded-full">
             {track.category}
           </span>
         </div>
         
         <div className="flex items-center space-x-2">
           {showSaveButton && (
-            <button 
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 toggleSaved(track.id);
               }}
+              aria-label={isSaved ? `Remove ${track.title} from saved tracks` : `Save ${track.title} to library`}
               className={`p-2 rounded-full transition-colors ${
-                isSaved 
-                  ? 'text-red-500 hover:text-red-600' 
+                isSaved
+                  ? 'text-red-500 hover:text-red-600'
                   : 'text-gray-400 hover:text-red-500'
               }`}
             >
@@ -94,11 +96,16 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
             </button>
           )}
           
-          <button 
+          <button
             onClick={(e) => {
               e.stopPropagation();
               handlePlayClick();
             }}
+            aria-label={
+              isCurrentTrack && isPlaying
+                ? `Pause ${track.title}`
+                : `Play ${track.title} by ${track.creator}`
+            }
             className="p-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-colors"
           >
             {isCurrentTrack && isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}

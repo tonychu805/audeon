@@ -211,7 +211,12 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <SearchBar 
+      <div className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Audeon</h1>
+        <p className="text-gray-600">Discover and listen to premium audio content</p>
+      </div>
+
+      <SearchBar
         value={searchQuery}
         onChange={setSearchQuery}
         placeholder="Search tracks, creators..."
