@@ -1,13 +1,63 @@
 import { supabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
 import { categoryStorage } from './categoryStorage';
-import { Category, CategoryWithAssets, CategoryHierarchy } from '../types';
+import {
+  Category,
+  CategoryWithAssets,
+  CategoryHierarchy,
+  Community,
+  Creator,
+  AudioTrack,
+} from '../types';
 
 
 // Helper function to get Supabase storage URL
 export const getStorageUrl = (bucket: string, filename: string) => {
   const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
   return data.publicUrl;
+};
+
+const httpUrlPattern = /^https?:\/\//i;
+
+const getCommunityFallbackLogo = (name: string) =>
+  `https://ui-avatars.com/api/?background=312e81&color=ffffff&name=${encodeURIComponent(
+    name || 'Community'
+  )}&size=256&bold=true`;
+
+const getCreatorFallbackImage = (name: string) =>
+  `https://ui-avatars.com/api/?background=6d28d9&color=ffffff&name=${encodeURIComponent(
+    name || 'Creator'
+  )}&size=256&bold=true`;
+
+const getTrackFallbackImage = (seed: string | number) =>
+  `https://picsum.photos/seed/track-${encodeURIComponent(String(seed))}/800/600`;
+
+const normalizeCommunityLogo = (logo: string | null, name: string): string => {
+  if (logo && httpUrlPattern.test(logo)) {
+    return logo;
+  }
+
+  return getCommunityFallbackLogo(name);
+};
+
+const normalizeCreatorImage = (image: string | null, name: string): string => {
+  if (image && httpUrlPattern.test(image)) {
+    return image;
+  }
+
+  return getCreatorFallbackImage(name);
+};
+
+const normalizeTrackImage = (
+  imageUrl: string | null,
+  trackId: number,
+  title: string
+): string => {
+  if (imageUrl && httpUrlPattern.test(imageUrl)) {
+    return imageUrl;
+  }
+
+  return getTrackFallbackImage(trackId || title);
 };
 
 // Communities
@@ -17,13 +67,19 @@ export const communityService = {
       .from('communities')
       .select('*')
       .order('name');
-    
+
     if (error) {
       logger.error('Error fetching communities:', error);
       return [];
     }
-    
-    return data || [];
+
+    return (data ?? []).map((community) => ({
+      id: community.id,
+      name: community.name,
+      logo: normalizeCommunityLogo(community.logo ?? null, community.name ?? ''),
+      description: community.description ?? '',
+      website: community.website ?? '',
+    }));
   },
 
   async getById(id: string): Promise<Community | null> {
@@ -32,14 +88,24 @@ export const communityService = {
       .select('*')
       .eq('id', id)
       .single();
-    
+
     if (error) {
       logger.error('Error fetching community:', error);
       return null;
     }
-    
-    return data;
-  }
+
+    if (!data) {
+      return null;
+    }
+
+    return {
+      id: data.id,
+      name: data.name,
+      logo: normalizeCommunityLogo(data.logo ?? null, data.name ?? ''),
+      description: data.description ?? '',
+      website: data.website ?? '',
+    };
+  },
 };
 
 // Creators
@@ -55,15 +121,17 @@ export const creatorService = {
       return [];
     }
     
-    return data?.map(creator => ({
-      id: creator.id,
-      name: creator.name,
-      image: creator.image || '',
-      bio: creator.bio || '',
-      category: creator.category,
-      followerCount: creator.follower_count || 0,
-      socialLinks: creator.social_links || []
-    })) || [];
+    return (
+      data?.map((creator) => ({
+        id: creator.id,
+        name: creator.name,
+        image: normalizeCreatorImage(creator.image ?? null, creator.name ?? ''),
+        bio: creator.bio || '',
+        category: creator.category,
+        followerCount: creator.follower_count || 0,
+        socialLinks: creator.social_links || [],
+      })) || []
+    );
   },
 
   async getById(id: string): Promise<Creator | null> {
@@ -83,11 +151,11 @@ export const creatorService = {
     return {
       id: data.id,
       name: data.name,
-      image: data.image || '',
+      image: normalizeCreatorImage(data.image ?? null, data.name ?? ''),
       bio: data.bio || '',
       category: data.category,
       followerCount: data.follower_count || 0,
-      socialLinks: data.social_links || []
+      socialLinks: data.social_links || [],
     };
   },
 
@@ -103,15 +171,17 @@ export const creatorService = {
       return [];
     }
     
-    return data?.map(creator => ({
-      id: creator.id,
-      name: creator.name,
-      image: creator.image || '',
-      bio: creator.bio || '',
-      category: creator.category,
-      followerCount: creator.follower_count || 0,
-      socialLinks: creator.social_links || []
-    })) || [];
+    return (
+      data?.map((creator) => ({
+        id: creator.id,
+        name: creator.name,
+        image: normalizeCreatorImage(creator.image ?? null, creator.name ?? ''),
+        bio: creator.bio || '',
+        category: creator.category,
+        followerCount: creator.follower_count || 0,
+        socialLinks: creator.social_links || [],
+      })) || []
+    );
   }
 };
 
@@ -149,10 +219,10 @@ export const trackService = {
       read_time: track.read_time || '',
       duration: track.duration || '0:00',
       main_image: {
-        url: track.main_image_url || '',
+        url: normalizeTrackImage(track.main_image_url ?? null, track.track_id, track.title ?? ''),
         caption: track.main_image_caption || '',
         width: track.main_image_width || 1200,
-        height: track.main_image_height || 630
+        height: track.main_image_height || 630,
       },
       voices: track.voices || [],
       gender: track.gender || '',
@@ -195,10 +265,10 @@ export const trackService = {
       read_time: data.read_time || '',
       duration: data.duration || '0:00',
       main_image: {
-        url: data.main_image_url || '',
+        url: normalizeTrackImage(data.main_image_url ?? null, data.track_id, data.title ?? ''),
         caption: data.main_image_caption || '',
         width: data.main_image_width || 1200,
-        height: data.main_image_height || 630
+        height: data.main_image_height || 630,
       },
       voices: data.voices || [],
       gender: data.gender || '',
@@ -239,10 +309,10 @@ export const trackService = {
       read_time: track.read_time || '',
       duration: track.duration || '0:00',
       main_image: {
-        url: track.main_image_url || '',
+        url: normalizeTrackImage(track.main_image_url ?? null, track.track_id, track.title ?? ''),
         caption: track.main_image_caption || '',
         width: track.main_image_width || 1200,
-        height: track.main_image_height || 630
+        height: track.main_image_height || 630,
       },
       voices: track.voices || [],
       gender: track.gender || '',
@@ -283,7 +353,7 @@ export const trackService = {
       read_time: track.read_time || '',
       duration: track.duration || '0:00',
       main_image: {
-        url: track.main_image_url || '',
+        url: normalizeTrackImage(track.main_image_url ?? null, track.track_id, track.title ?? ''),
         caption: track.main_image_caption || '',
         width: track.main_image_width || 1200,
         height: track.main_image_height || 630

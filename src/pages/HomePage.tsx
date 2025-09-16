@@ -14,6 +14,7 @@ export const HomePage: React.FC = () => {
   const [featuredCreators, setFeaturedCreators] = useState<Creator[]>([]);
   const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [communityScrollPosition, setCommunityScrollPosition] = useState(0);
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
@@ -60,6 +61,15 @@ export const HomePage: React.FC = () => {
   const [lastDragPosition, setLastDragPosition] = useState(0);
   const [velocity, setVelocity] = useState(0);
   const [isDecelerating, setIsDecelerating] = useState(false);
+
+  const [isCommunityDragging, setIsCommunityDragging] = useState(false);
+  const [isCommunityMouseDown, setIsCommunityMouseDown] = useState(false);
+  const [communityDragStart, setCommunityDragStart] = useState(0);
+  const [communityDragStartScrollPosition, setCommunityDragStartScrollPosition] = useState(0);
+  const [communityLastDragTime, setCommunityLastDragTime] = useState(0);
+  const [communityLastDragPosition, setCommunityLastDragPosition] = useState(0);
+  const [communityVelocity, setCommunityVelocity] = useState(0);
+  const [isCommunityDecelerating, setIsCommunityDecelerating] = useState(false);
 
   const DRAG_THRESHOLD = 5; // pixels before considering it a drag
   const MOMENTUM_FACTOR = 0.95; // Deceleration factor (0-1, closer to 1 = less friction)
@@ -187,6 +197,121 @@ export const HomePage: React.FC = () => {
     return () => cancelAnimationFrame(animationFrame);
   }, [isDecelerating, velocity, featuredCreators.length]);
 
+  const handleCommunityMouseDown = (e: React.MouseEvent) => {
+    setIsCommunityMouseDown(true);
+    setCommunityDragStart(e.clientX);
+    setCommunityDragStartScrollPosition(communityScrollPosition);
+    setCommunityLastDragTime(Date.now());
+    setCommunityLastDragPosition(e.clientX);
+    setIsCommunityDecelerating(false);
+  };
+
+  const handleCommunityMouseMove = (e: React.MouseEvent) => {
+    if (!isCommunityMouseDown) return;
+
+    const currentTime = Date.now();
+    const currentPosition = e.clientX;
+    const dragDistance = Math.abs(communityDragStart - currentPosition);
+
+    if (dragDistance > DRAG_THRESHOLD && !isCommunityDragging) {
+      setIsCommunityDragging(true);
+    }
+
+    if (isCommunityDragging) {
+      e.preventDefault();
+      const scrollDistance = communityDragStart - currentPosition;
+      const newPosition = Math.max(0, communityDragStartScrollPosition + scrollDistance);
+      setCommunityScrollPosition(newPosition);
+
+      const timeDelta = currentTime - communityLastDragTime;
+      const positionDelta = currentPosition - communityLastDragPosition;
+      if (timeDelta > 0) {
+        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
+        setCommunityVelocity(newVelocity);
+      }
+
+      setCommunityLastDragTime(currentTime);
+      setCommunityLastDragPosition(currentPosition);
+    }
+  };
+
+  const handleCommunityMouseUp = () => {
+    if (isCommunityDragging && Math.abs(communityVelocity) > MIN_VELOCITY) {
+      setIsCommunityDecelerating(true);
+    }
+    setIsCommunityMouseDown(false);
+    setIsCommunityDragging(false);
+  };
+
+  const handleCommunityTouchStart = (e: React.TouchEvent) => {
+    setIsCommunityMouseDown(true);
+    setCommunityDragStart(e.touches[0].clientX);
+    setCommunityDragStartScrollPosition(communityScrollPosition);
+    setCommunityLastDragTime(Date.now());
+    setCommunityLastDragPosition(e.touches[0].clientX);
+    setIsCommunityDecelerating(false);
+  };
+
+  const handleCommunityTouchMove = (e: React.TouchEvent) => {
+    if (!isCommunityMouseDown) return;
+
+    const currentTime = Date.now();
+    const currentPosition = e.touches[0].clientX;
+    const dragDistance = Math.abs(communityDragStart - currentPosition);
+
+    if (dragDistance > DRAG_THRESHOLD && !isCommunityDragging) {
+      setIsCommunityDragging(true);
+    }
+
+    if (isCommunityDragging) {
+      const scrollDistance = communityDragStart - currentPosition;
+      const newPosition = Math.max(0, communityDragStartScrollPosition + scrollDistance);
+      setCommunityScrollPosition(newPosition);
+
+      const timeDelta = currentTime - communityLastDragTime;
+      const positionDelta = currentPosition - communityLastDragPosition;
+      if (timeDelta > 0) {
+        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
+        setCommunityVelocity(newVelocity);
+      }
+
+      setCommunityLastDragTime(currentTime);
+      setCommunityLastDragPosition(currentPosition);
+    }
+  };
+
+  const handleCommunityTouchEnd = () => {
+    if (isCommunityDragging && Math.abs(communityVelocity) > MIN_VELOCITY) {
+      setIsCommunityDecelerating(true);
+    }
+    setIsCommunityMouseDown(false);
+    setIsCommunityDragging(false);
+  };
+
+  useEffect(() => {
+    if (!isCommunityDecelerating || Math.abs(communityVelocity) < MIN_VELOCITY) {
+      if (isCommunityDecelerating) {
+        setIsCommunityDecelerating(false);
+      }
+      return;
+    }
+
+    const animationFrame = requestAnimationFrame(() => {
+      setCommunityScrollPosition(currentPosition => {
+        const maxScroll = Math.max(0, (featuredCommunities.length - 2) * 220);
+        const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + communityVelocity));
+        return newPosition;
+      });
+
+      setCommunityVelocity(currentVelocity => {
+        const newVelocity = currentVelocity * MOMENTUM_FACTOR;
+        return Math.abs(newVelocity) < MIN_VELOCITY ? 0 : newVelocity;
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isCommunityDecelerating, communityVelocity, featuredCommunities.length]);
+
   if (isLoading) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
@@ -273,29 +398,53 @@ export const HomePage: React.FC = () => {
 
       {/* Recommended Communities */}
       <section>
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4">
           <h2 className="text-2xl font-bold text-gray-900">Recommended Communities</h2>
-          <button 
-            onClick={() => navigate('/communities')}
-            className="text-purple-600 text-sm font-medium hover:text-purple-700"
-          >
-            View All
-          </button>
         </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {featuredCommunities.map((community) => (
-            <CommunityCard 
-              key={community.id}
-              community={community} 
-              onClick={() => navigate(`/communities/${community.id}`, { 
-                state: { from: '/home' } 
-              })}
-            />
-          ))}
-        </div>
+        {featuredCommunities.length > 0 ? (
+          <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
+            <div
+              className="flex space-x-4"
+              style={{
+                transform: `translateX(-${communityScrollPosition}px)`,
+                transition: (isCommunityDragging || isCommunityDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              onMouseDown={handleCommunityMouseDown}
+              onMouseMove={handleCommunityMouseMove}
+              onMouseUp={handleCommunityMouseUp}
+              onMouseLeave={handleCommunityMouseUp}
+              onTouchStart={handleCommunityTouchStart}
+              onTouchMove={handleCommunityTouchMove}
+              onTouchEnd={handleCommunityTouchEnd}
+            >
+              {featuredCommunities.map((community) => (
+                <div
+                  key={community.id}
+                  className="flex-shrink-0 w-56 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  style={{
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none',
+                    pointerEvents: isCommunityDragging ? 'none' : 'auto'
+                  }}
+                >
+                  <CommunityCard
+                    community={community}
+                    onClick={() => {
+                      if (!isCommunityDragging) {
+                        navigate(`/communities/${community.id}`, {
+                          state: { from: '/home' }
+                        });
+                      }
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
 
-        {featuredCommunities.length === 0 && !isLoading && (
+            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+          </div>
+        ) : (
           <div className="text-center py-8">
             <p className="text-gray-500">No communities available at the moment.</p>
           </div>

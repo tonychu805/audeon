@@ -29,10 +29,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ community, onClick
         }}
       />
       <h3 className="font-semibold text-gray-900 mb-1">{community.name}</h3>
-      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{community.description}</p>
-      {community.website && (
-        <p className="text-xs text-purple-600 truncate">{community.website}</p>
-      )}
+      <p className="text-sm text-gray-600 line-clamp-2">{community.description}</p>
     </div>
   );
 };
