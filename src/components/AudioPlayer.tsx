@@ -215,7 +215,7 @@ export const AudioPlayer: React.FC = () => {
     >
       <div 
         onClick={toggleExpanded}
-        className="flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-gray-800 transition-colors"
+        className="flex items-center justify-between px-3 pt-2 pb-1 cursor-pointer hover:bg-gray-800 transition-colors"
       >
         <div className="flex items-center space-x-3">
           <img 
