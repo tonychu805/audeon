@@ -117,22 +117,45 @@ export const ExplorePage: React.FC = () => {
     const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
     const communitiesInCategory = selectedCategoryData ? getCommunitiesInCategory(selectedCategoryData.name) : [];
     
+    const categoryHeroImage = selectedCategoryData?.heroImageUrl ||
+      `https://images.unsplash.com/photo-${getImageForCategory(selectedCategoryData?.name || '')}?w=800&h=300&fit=crop`;
+
     return (
       <div className="bg-white min-h-screen">
-        <div className="px-4 pt-6 pb-4">
-          <div className="flex items-center space-x-4 mb-6">
-            <button 
-              onClick={() => setSelectedCategory(null)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <h1 className="text-2xl font-bold text-black">
-              {selectedCategoryData?.name.toUpperCase()}
-            </h1>
+        {/* Hero Section */}
+        <div className="relative h-64 overflow-hidden">
+          <img
+            src={categoryHeroImage}
+            alt={selectedCategoryData?.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+
+          {/* Back button and title overlay */}
+          <div className="absolute inset-0 flex flex-col justify-between p-4">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className="p-2 bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="text-white">
+              <h1 className="text-3xl font-bold mb-2">
+                {selectedCategoryData?.name.toUpperCase()}
+              </h1>
+              <p className="text-white/90 text-sm">
+                Discover {filteredCreators.length} creators and premium content
+              </p>
+            </div>
           </div>
+        </div>
+
+        <div className="px-4 pt-6 pb-4">
 
           {/* Creators Section */}
           <div className="mb-8">
