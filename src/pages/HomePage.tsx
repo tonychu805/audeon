@@ -137,11 +137,20 @@ export const HomePage: React.FC = () => {
     const button = categoryButtonRefs.current[selectedCategory];
     if (!container || !button) return;
 
-    button.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'center'
-    });
+    // Only scroll if the button is not visible in the viewport
+    const containerRect = container.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+
+    const isVisible = buttonRect.left >= containerRect.left &&
+                     buttonRect.right <= containerRect.right;
+
+    if (!isVisible) {
+      button.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
   }, [selectedCategory, uniqueCategories.length]);
 
   useEffect(() => {
@@ -172,8 +181,9 @@ export const HomePage: React.FC = () => {
           alt="User avatar"
           className="w-10 h-10 rounded-full border border-purple-200 shadow-sm flex-shrink-0"
         />
-        <div ref={categoryContainerRef} className="flex-1 overflow-hidden">
-          <div className="no-scrollbar overflow-x-auto">
+        <div ref={categoryContainerRef} className="flex-1 overflow-hidden relative">
+          <div className="no-scrollbar overflow-x-auto pb-1"
+               style={{ scrollSnapType: 'x mandatory' }}>
             <div className="flex gap-2 items-center pr-4">
               {uniqueCategories.map(category => {
                 const displayName = category === 'all'
@@ -192,12 +202,14 @@ export const HomePage: React.FC = () => {
                   }}
                   type="button"
                   onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full px-3 py-1.5 text-sm whitespace-nowrap font-medium transition-colors border ${
+                  className={`rounded-full px-4 py-2.5 text-sm whitespace-nowrap font-medium transition-colors border min-h-[44px] flex items-center justify-center ${
                     isActive
                       ? 'bg-purple-600 border-purple-600 text-white shadow-md'
-                      : 'bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200'
+                      : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
                   }`}
+                  style={{ scrollSnapAlign: 'center' }}
                   aria-pressed={isActive}
+                  aria-label={`Filter by ${displayName} category`}
                 >
                   {displayName}
                 </button>
@@ -205,6 +217,10 @@ export const HomePage: React.FC = () => {
             })}
             </div>
           </div>
+
+          {/* Scroll hint gradients */}
+          <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white to-transparent pointer-events-none opacity-60"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white to-transparent pointer-events-none opacity-60"></div>
         </div>
       </div>
 

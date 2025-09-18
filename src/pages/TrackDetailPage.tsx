@@ -15,7 +15,6 @@ export const TrackDetailPage: React.FC = () => {
   const { currentTrack, isPlaying, playTrack, togglePlayPause, savedTracks, toggleSaved } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
-  const [creatorLoading, setCreatorLoading] = useState(false);
   const track = audioTracks.find(t => t.id === trackId);
 
   // Load creator data when track changes
@@ -23,7 +22,6 @@ export const TrackDetailPage: React.FC = () => {
     const loadCreator = async () => {
       if (!track?.creator) return;
       
-      setCreatorLoading(true);
       try {
         const creators = await creatorService.getAll();
         const foundCreator = creators.find(c => c.name === track.creator);
@@ -31,8 +29,6 @@ export const TrackDetailPage: React.FC = () => {
       } catch (error) {
         logger.error('Failed to load creator:', error);
         setCreator(null);
-      } finally {
-        setCreatorLoading(false);
       }
     };
     
@@ -135,7 +131,7 @@ export const TrackDetailPage: React.FC = () => {
         <meta property="og:description" content={trackDescription} />
         <meta property="og:image" content={trackImage} />
         <meta property="og:site_name" content="Audeon" />
-        <meta property="og:audio" content={track.audio_url} />
+        <meta property="og:audio" content={track.audioUrl} />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
