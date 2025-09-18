@@ -131,6 +131,12 @@ export const ExplorePage: React.FC = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
+          {/* Gradient border effects */}
+          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
+          <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+          <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-purple-500/40 to-transparent"></div>
+
           {/* Back button and title overlay */}
           <div className="absolute inset-0 flex flex-col justify-between">
             <div className="flex items-center justify-between p-4 pt-6">
