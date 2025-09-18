@@ -123,7 +123,7 @@ export const ExplorePage: React.FC = () => {
     return (
       <div className="bg-white min-h-screen">
         {/* Hero Section */}
-        <div className="relative h-64 overflow-hidden">
+        <div className="relative h-64 overflow-hidden -mx-4 -mt-6">
           <img
             src={categoryHeroImage}
             alt={selectedCategoryData?.name}
@@ -132,8 +132,8 @@ export const ExplorePage: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
           {/* Back button and title overlay */}
-          <div className="absolute inset-0 flex flex-col justify-between p-4">
-            <div className="flex items-center justify-between">
+          <div className="absolute inset-0 flex flex-col justify-between">
+            <div className="flex items-center justify-between p-4 pt-6">
               <button
                 onClick={() => setSelectedCategory(null)}
                 className="p-2 bg-black/20 backdrop-blur-sm hover:bg-black/40 rounded-full transition-colors"
@@ -144,7 +144,7 @@ export const ExplorePage: React.FC = () => {
               </button>
             </div>
 
-            <div className="text-white">
+            <div className="text-white px-4 pb-6">
               <h1 className="text-3xl font-bold mb-2">
                 {selectedCategoryData?.name.toUpperCase()}
               </h1>
