@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { categoryService, creatorService, communityService } from '../services/database';
 import { Category, Creator, CategoryWithAssets, Community } from '../types';
 import { TrackCard } from '../components/TrackCard';
+import { CreatorCard } from '../components/CreatorCard';
 import { CommunityCard } from '../components/CommunityCard';
 import { SearchBar } from '../components/SearchBar';
 import { useNavigate } from 'react-router-dom';
@@ -135,26 +136,24 @@ export const ExplorePage: React.FC = () => {
 
           {/* Creators Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-bold text-black mb-4">CREATORS</h2>
+            <h2 className="text-xl font-bold text-black mb-4">CREATORS IN {selectedCategoryData?.name.toUpperCase()}</h2>
             <div className="grid grid-cols-2 gap-4">
-              {filteredCreators.map(creator => (
+              {filteredCreators.map((creator) => (
                 <div
                   key={creator.id}
-                  onClick={() => navigate(`/creators/${creator.id}`, { 
-                    state: { from: '/explore' } 
-                  })}
-                  className="bg-white rounded-xl border p-4 hover:shadow-md transition-all cursor-pointer"
+                  className="transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                  style={{
+                    userSelect: 'none',
+                    WebkitUserSelect: 'none'
+                  }}
                 >
-                  <img
-                    src={creator.image || `https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop`}
-                    alt={creator.name}
-                    className="w-16 h-16 rounded-full mx-auto mb-3 object-cover"
+                  <CreatorCard
+                    creator={creator}
+                    onClick={() => navigate(`/creators/${creator.id}`, {
+                      state: { from: '/explore' }
+                    })}
+                    layout="compact"
                   />
-                  <h3 className="font-semibold text-gray-900 text-center text-sm">{creator.name}</h3>
-                  <p className="text-xs text-gray-500 text-center mt-1">{creator.followerCount.toLocaleString()} followers</p>
-                  {creator.bio && (
-                    <p className="text-xs text-gray-600 text-center mt-2 line-clamp-2">{creator.bio}</p>
-                  )}
                 </div>
               ))}
             </div>
@@ -173,14 +172,22 @@ export const ExplorePage: React.FC = () => {
                 COMMUNITIES IN {selectedCategoryData?.name.toUpperCase()}
               </h2>
               <div className="grid grid-cols-2 gap-4">
-                {communitiesInCategory.map(community => (
-                  <CommunityCard
+                {communitiesInCategory.map((community) => (
+                  <div
                     key={community.id}
-                    community={community}
-                    onClick={() => navigate(`/communities/${community.id}`, { 
-                      state: { from: '/explore' } 
-                    })}
-                  />
+                    className="transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                    style={{
+                      userSelect: 'none',
+                      WebkitUserSelect: 'none'
+                    }}
+                  >
+                    <CommunityCard
+                      community={community}
+                      onClick={() => navigate(`/communities/${community.id}`, {
+                        state: { from: '/explore' }
+                      })}
+                    />
+                  </div>
                 ))}
               </div>
             </div>
