@@ -2,7 +2,7 @@ import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Play, Pause, Heart, Calendar, User, Share, Download, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Heart, Calendar, Share, Download, MoreHorizontal } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 import { creatorService } from '../services/database';
@@ -265,37 +265,6 @@ export const TrackDetailPage: React.FC = () => {
         <div className="bg-white rounded-xl p-6 border">
           <h2 className="text-xl font-bold text-gray-900 mb-4">About this episode</h2>
           <p className="text-gray-700 leading-relaxed">{track.summary || track.full_content}</p>
-          
-          <div className="mt-6 pt-6 border-t">
-            <div className="flex items-center space-x-3 mb-4">
-              <User className="w-5 h-5 text-gray-500" />
-              <span className="font-semibold text-gray-900">Creator</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              {creatorLoading ? (
-                <div className="w-16 h-16 rounded-full bg-gray-300 animate-pulse"></div>
-              ) : creator ? (
-                <img 
-                  src={creator.image} 
-                  alt={creator.name}
-                  className="w-16 h-16 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                  <User className="w-8 h-8 text-gray-400" />
-                </div>
-              )}
-              <div>
-                <h3 className="font-semibold text-gray-900">{track.creator}</h3>
-                {creator && (
-                  <>
-                    <p className="text-gray-600 text-sm">{creator.bio}</p>
-                    <p className="text-gray-500 text-xs mt-1">{creator.followerCount.toLocaleString()} followers</p>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Comments Section Placeholder */}

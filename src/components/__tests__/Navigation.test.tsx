@@ -23,7 +23,7 @@ describe('Navigation Component', () => {
     expect(exploreTab).toHaveClass('text-purple-600', 'bg-purple-50')
 
     // Inactive tab should have gray styling
-    expect(homeTab).toHaveClass('text-gray-600')
+    expect(homeTab).toHaveClass('text-gray-500')
     expect(homeTab).not.toHaveClass('text-purple-600', 'bg-purple-50')
   })
 

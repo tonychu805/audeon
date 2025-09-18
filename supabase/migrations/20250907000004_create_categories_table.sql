@@ -30,4 +30,5 @@ INSERT INTO categories (id, name, icon) VALUES
 ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Psychology', '🧠'),
 ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Product Management', '🚀'),
 ('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Marketing', '📢'),
-('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Finance', '💰');
+('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Finance', '💰'),
+('550e8400-e29b-41d4-a716-446655440007'::uuid, 'Wellness', '🧘');

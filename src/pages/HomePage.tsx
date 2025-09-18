@@ -13,8 +13,8 @@ export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [featuredCreators, setFeaturedCreators] = useState<Creator[]>([]);
   const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [communityScrollPosition, setCommunityScrollPosition] = useState(0);
+  const creatorScrollRef = useRef<HTMLDivElement | null>(null);
+  const communityScrollRef = useRef<HTMLDivElement | null>(null);
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   
@@ -26,11 +26,12 @@ export const HomePage: React.FC = () => {
     if (value.includes('psychology')) return 'psychology';
     if (value.includes('marketing')) return 'marketing';
     if (value.includes('finance')) return 'finance';
+    if (value.includes('well')) return 'wellness';
     return value;
   };
 
   const uniqueCategories = React.useMemo(() => {
-    const defaultCategories = ['data', 'finance', 'marketing', 'psychology', 'product'];
+    const defaultCategories = ['data', 'finance', 'marketing', 'psychology', 'product', 'wellness'];
 
     const categoryMap = new Map<string, number>();
     audioTracks.forEach(track => {
@@ -128,267 +129,8 @@ export const HomePage: React.FC = () => {
   }, [isLoading]);
 
   // Momentum-based carousel state
-  const [isDragging, setIsDragging] = useState(false);
-  const [isMouseDown, setIsMouseDown] = useState(false);
-  const [dragStart, setDragStart] = useState(0);
-  const [dragStartScrollPosition, setDragStartScrollPosition] = useState(0);
-  const [lastDragTime, setLastDragTime] = useState(0);
-  const [lastDragPosition, setLastDragPosition] = useState(0);
-  const [velocity, setVelocity] = useState(0);
-  const [isDecelerating, setIsDecelerating] = useState(false);
-
-  const [isCommunityDragging, setIsCommunityDragging] = useState(false);
-  const [isCommunityMouseDown, setIsCommunityMouseDown] = useState(false);
-  const [communityDragStart, setCommunityDragStart] = useState(0);
-  const [communityDragStartScrollPosition, setCommunityDragStartScrollPosition] = useState(0);
-  const [communityLastDragTime, setCommunityLastDragTime] = useState(0);
-  const [communityLastDragPosition, setCommunityLastDragPosition] = useState(0);
-  const [communityVelocity, setCommunityVelocity] = useState(0);
-  const [isCommunityDecelerating, setIsCommunityDecelerating] = useState(false);
-
   const categoryContainerRef = useRef<HTMLDivElement | null>(null);
   const categoryButtonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-
-  const DRAG_THRESHOLD = 5; // pixels before considering it a drag
-  const MOMENTUM_FACTOR = 0.95; // Deceleration factor (0-1, closer to 1 = less friction)
-  const MIN_VELOCITY = 0.5; // Minimum velocity to continue momentum
-  const MAX_VELOCITY = 15; // Maximum velocity cap
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsMouseDown(true);
-    setDragStart(e.clientX);
-    setDragStartScrollPosition(scrollPosition);
-    setLastDragTime(Date.now());
-    setLastDragPosition(e.clientX);
-    setIsDecelerating(false); // Stop any existing momentum
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isMouseDown) return;
-    
-    const currentTime = Date.now();
-    const currentPosition = e.clientX;
-    const dragDistance = Math.abs(dragStart - currentPosition);
-    
-    // Only start dragging if we've moved beyond threshold
-    if (dragDistance > DRAG_THRESHOLD && !isDragging) {
-      setIsDragging(true);
-    }
-    
-    if (isDragging) {
-      e.preventDefault();
-      const scrollDistance = dragStart - currentPosition;
-      const newPosition = Math.max(0, dragStartScrollPosition + scrollDistance);
-      setScrollPosition(newPosition);
-      
-      // Calculate velocity for momentum
-      const timeDelta = currentTime - lastDragTime;
-      const positionDelta = currentPosition - lastDragPosition;
-      if (timeDelta > 0) {
-        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16)); // Normalize to ~60fps
-        setVelocity(newVelocity);
-      }
-      
-      setLastDragTime(currentTime);
-      setLastDragPosition(currentPosition);
-    }
-  };
-
-  const handleMouseUp = () => {
-    if (isDragging && Math.abs(velocity) > MIN_VELOCITY) {
-      setIsDecelerating(true);
-    }
-    setIsMouseDown(false);
-    setIsDragging(false);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsMouseDown(true);
-    setDragStart(e.touches[0].clientX);
-    setDragStartScrollPosition(scrollPosition);
-    setLastDragTime(Date.now());
-    setLastDragPosition(e.touches[0].clientX);
-    setIsDecelerating(false);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isMouseDown) return;
-    
-    const currentTime = Date.now();
-    const currentPosition = e.touches[0].clientX;
-    const dragDistance = Math.abs(dragStart - currentPosition);
-    
-    // Only start dragging if we've moved beyond threshold
-    if (dragDistance > DRAG_THRESHOLD && !isDragging) {
-      setIsDragging(true);
-    }
-    
-    if (isDragging) {
-      const scrollDistance = dragStart - currentPosition;
-      const newPosition = Math.max(0, dragStartScrollPosition + scrollDistance);
-      setScrollPosition(newPosition);
-      
-      // Calculate velocity for momentum
-      const timeDelta = currentTime - lastDragTime;
-      const positionDelta = currentPosition - lastDragPosition;
-      if (timeDelta > 0) {
-        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
-        setVelocity(newVelocity);
-      }
-      
-      setLastDragTime(currentTime);
-      setLastDragPosition(currentPosition);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    if (isDragging && Math.abs(velocity) > MIN_VELOCITY) {
-      setIsDecelerating(true);
-    }
-    setIsMouseDown(false);
-    setIsDragging(false);
-  };
-
-  // Momentum scrolling animation
-  useEffect(() => {
-    if (!isDecelerating || Math.abs(velocity) < MIN_VELOCITY) {
-      if (isDecelerating) {
-        setIsDecelerating(false);
-      }
-      return;
-    }
-
-    const animationFrame = requestAnimationFrame(() => {
-      setScrollPosition(currentPosition => {
-        const maxScroll = Math.max(0, (filteredCreators.length - 3) * 160); // Account for actual card width
-        const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + velocity));
-        return newPosition;
-      });
-      
-      // Apply friction to velocity
-      setVelocity(currentVelocity => {
-        const newVelocity = currentVelocity * MOMENTUM_FACTOR;
-        return Math.abs(newVelocity) < MIN_VELOCITY ? 0 : newVelocity;
-      });
-    });
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isDecelerating, velocity, filteredCreators.length]);
-
-  const handleCommunityMouseDown = (e: React.MouseEvent) => {
-    setIsCommunityMouseDown(true);
-    setCommunityDragStart(e.clientX);
-    setCommunityDragStartScrollPosition(communityScrollPosition);
-    setCommunityLastDragTime(Date.now());
-    setCommunityLastDragPosition(e.clientX);
-    setIsCommunityDecelerating(false);
-  };
-
-  const handleCommunityMouseMove = (e: React.MouseEvent) => {
-    if (!isCommunityMouseDown) return;
-
-    const currentTime = Date.now();
-    const currentPosition = e.clientX;
-    const dragDistance = Math.abs(communityDragStart - currentPosition);
-
-    if (dragDistance > DRAG_THRESHOLD && !isCommunityDragging) {
-      setIsCommunityDragging(true);
-    }
-
-    if (isCommunityDragging) {
-      e.preventDefault();
-      const scrollDistance = communityDragStart - currentPosition;
-      const newPosition = Math.max(0, communityDragStartScrollPosition + scrollDistance);
-      setCommunityScrollPosition(newPosition);
-
-      const timeDelta = currentTime - communityLastDragTime;
-      const positionDelta = currentPosition - communityLastDragPosition;
-      if (timeDelta > 0) {
-        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
-        setCommunityVelocity(newVelocity);
-      }
-
-      setCommunityLastDragTime(currentTime);
-      setCommunityLastDragPosition(currentPosition);
-    }
-  };
-
-  const handleCommunityMouseUp = () => {
-    if (isCommunityDragging && Math.abs(communityVelocity) > MIN_VELOCITY) {
-      setIsCommunityDecelerating(true);
-    }
-    setIsCommunityMouseDown(false);
-    setIsCommunityDragging(false);
-  };
-
-  const handleCommunityTouchStart = (e: React.TouchEvent) => {
-    setIsCommunityMouseDown(true);
-    setCommunityDragStart(e.touches[0].clientX);
-    setCommunityDragStartScrollPosition(communityScrollPosition);
-    setCommunityLastDragTime(Date.now());
-    setCommunityLastDragPosition(e.touches[0].clientX);
-    setIsCommunityDecelerating(false);
-  };
-
-  const handleCommunityTouchMove = (e: React.TouchEvent) => {
-    if (!isCommunityMouseDown) return;
-
-    const currentTime = Date.now();
-    const currentPosition = e.touches[0].clientX;
-    const dragDistance = Math.abs(communityDragStart - currentPosition);
-
-    if (dragDistance > DRAG_THRESHOLD && !isCommunityDragging) {
-      setIsCommunityDragging(true);
-    }
-
-    if (isCommunityDragging) {
-      const scrollDistance = communityDragStart - currentPosition;
-      const newPosition = Math.max(0, communityDragStartScrollPosition + scrollDistance);
-      setCommunityScrollPosition(newPosition);
-
-      const timeDelta = currentTime - communityLastDragTime;
-      const positionDelta = currentPosition - communityLastDragPosition;
-      if (timeDelta > 0) {
-        const newVelocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, -positionDelta / timeDelta * 16));
-        setCommunityVelocity(newVelocity);
-      }
-
-      setCommunityLastDragTime(currentTime);
-      setCommunityLastDragPosition(currentPosition);
-    }
-  };
-
-  const handleCommunityTouchEnd = () => {
-    if (isCommunityDragging && Math.abs(communityVelocity) > MIN_VELOCITY) {
-      setIsCommunityDecelerating(true);
-    }
-    setIsCommunityMouseDown(false);
-    setIsCommunityDragging(false);
-  };
-
-  useEffect(() => {
-    if (!isCommunityDecelerating || Math.abs(communityVelocity) < MIN_VELOCITY) {
-      if (isCommunityDecelerating) {
-        setIsCommunityDecelerating(false);
-      }
-      return;
-    }
-
-    const animationFrame = requestAnimationFrame(() => {
-      setCommunityScrollPosition(currentPosition => {
-        const maxScroll = Math.max(0, (filteredCommunities.length - 2) * 220);
-        const newPosition = Math.max(0, Math.min(maxScroll, currentPosition + communityVelocity));
-        return newPosition;
-      });
-
-      setCommunityVelocity(currentVelocity => {
-        const newVelocity = currentVelocity * MOMENTUM_FACTOR;
-        return Math.abs(newVelocity) < MIN_VELOCITY ? 0 : newVelocity;
-      });
-    });
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isCommunityDecelerating, communityVelocity, filteredCommunities.length]);
 
   useEffect(() => {
     const container = categoryContainerRef.current;
@@ -403,14 +145,12 @@ export const HomePage: React.FC = () => {
   }, [selectedCategory, uniqueCategories.length]);
 
   useEffect(() => {
-    setScrollPosition(0);
-    setCommunityScrollPosition(0);
-    setIsDragging(false);
-    setIsDecelerating(false);
-    setIsCommunityDragging(false);
-    setIsCommunityDecelerating(false);
-    setVelocity(0);
-    setCommunityVelocity(0);
+    if (creatorScrollRef.current) {
+      creatorScrollRef.current.scrollTo({ left: 0, behavior: 'auto' });
+    }
+    if (communityScrollRef.current) {
+      communityScrollRef.current.scrollTo({ left: 0, behavior: 'auto' });
+    }
   }, [selectedCategory]);
 
   if (isLoading) {
@@ -489,54 +229,32 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Creators Smooth Carousel */}
+      {/* Featured Creators */}
       <section>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Featured Creators</h2>
-        
+
         {filteredCreators.length > 0 ? (
-          <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
-            <div 
-              className="flex space-x-4"
-              style={{
-                transform: `translateX(-${scrollPosition}px)`,
-                transition: (isDragging || isDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-              }}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
+          <div ref={creatorScrollRef} className="no-scrollbar overflow-x-auto">
+            <div className="flex space-x-4 pr-4">
               {filteredCreators.map((creator) => (
                 <div
                   key={creator.id}
                   className="flex-shrink-0 w-40 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
-                  style={{ 
+                  style={{
                     userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    pointerEvents: isDragging ? 'none' : 'auto'
+                    WebkitUserSelect: 'none'
                   }}
                 >
-                  <CreatorCard 
-                    creator={creator} 
-                    onClick={() => {
-                      // Only navigate if we're not dragging
-                      if (!isDragging) {
-                        navigate(`/creators/${creator.id}`, { 
-                          state: { from: '/home' } 
-                        });
-                      }
-                    }}
+                  <CreatorCard
+                    creator={creator}
+                    onClick={() => navigate(`/creators/${creator.id}`, {
+                      state: { from: '/home' }
+                    })}
+                    layout="compact"
                   />
                 </div>
               ))}
             </div>
-            
-            {/* Gradient fade effects */}
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
           </div>
         ) : (
           <div className="text-center py-8 border rounded-lg bg-gray-50">
@@ -552,47 +270,26 @@ export const HomePage: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900">Recommended Communities</h2>
         </div>
         {filteredCommunities.length > 0 ? (
-          <div className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none">
-            <div
-              className="flex space-x-4"
-              style={{
-                transform: `translateX(-${communityScrollPosition}px)`,
-                transition: (isCommunityDragging || isCommunityDecelerating) ? 'none' : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-              }}
-              onMouseDown={handleCommunityMouseDown}
-              onMouseMove={handleCommunityMouseMove}
-              onMouseUp={handleCommunityMouseUp}
-              onMouseLeave={handleCommunityMouseUp}
-              onTouchStart={handleCommunityTouchStart}
-              onTouchMove={handleCommunityTouchMove}
-              onTouchEnd={handleCommunityTouchEnd}
-            >
+          <div ref={communityScrollRef} className="no-scrollbar overflow-x-auto">
+            <div className="flex space-x-4 pr-4">
               {filteredCommunities.map((community) => (
                 <div
                   key={community.id}
                   className="flex-shrink-0 w-56 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"
                   style={{
                     userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    pointerEvents: isCommunityDragging ? 'none' : 'auto'
+                    WebkitUserSelect: 'none'
                   }}
                 >
                   <CommunityCard
                     community={community}
-                    onClick={() => {
-                      if (!isCommunityDragging) {
-                        navigate(`/communities/${community.id}`, {
-                          state: { from: '/home' }
-                        });
-                      }
-                    }}
+                    onClick={() => navigate(`/communities/${community.id}`, {
+                      state: { from: '/home' }
+                    })}
                   />
                 </div>
               ))}
             </div>
-
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none z-10" />
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
           </div>
         ) : (
           <div className="text-center py-8">

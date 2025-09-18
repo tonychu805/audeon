@@ -77,6 +77,16 @@ const initialCategories: CategoryMigrationData[] = [
     keywords: ['technology', 'software', 'engineering', 'innovation', 'programming'],
     target_audience: ['developers', 'engineers', 'tech professionals'],
     sort_order: 6
+  },
+  {
+    name: 'Wellness',
+    slug: 'wellness',
+    description: 'Mindfulness, fitness, and holistic wellbeing guidance',
+    industry: 'Healthcare',
+    color_theme: 'teal',
+    keywords: ['wellness', 'mindfulness', 'fitness', 'self-care', 'health'],
+    target_audience: ['health enthusiasts', 'coaches', 'wellbeing practitioners'],
+    sort_order: 7
   }
 ];
 

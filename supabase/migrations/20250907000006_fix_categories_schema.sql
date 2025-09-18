@@ -35,7 +35,8 @@ INSERT INTO categories (id, name, icon) VALUES
 ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Psychology', '🧠'),
 ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Product Management', '🚀'),
 ('550e8400-e29b-41d4-a716-446655440005'::uuid, 'Marketing', '📢'),
-('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Finance', '💰');
+('550e8400-e29b-41d4-a716-446655440006'::uuid, 'Finance', '💰'),
+('550e8400-e29b-41d4-a716-446655440007'::uuid, 'Wellness', '🧘');
 
 -- Drop existing category_id column from audio_tracks (may be text type)
 ALTER TABLE audio_tracks DROP COLUMN IF EXISTS category_id;
@@ -50,6 +51,7 @@ UPDATE audio_tracks SET category_id = '550e8400-e29b-41d4-a716-446655440003'::uu
 UPDATE audio_tracks SET category_id = '550e8400-e29b-41d4-a716-446655440004'::uuid WHERE category = 'Product Management';
 UPDATE audio_tracks SET category_id = '550e8400-e29b-41d4-a716-446655440005'::uuid WHERE category = 'Marketing';
 UPDATE audio_tracks SET category_id = '550e8400-e29b-41d4-a716-446655440006'::uuid WHERE category = 'Finance';
+UPDATE audio_tracks SET category_id = '550e8400-e29b-41d4-a716-446655440007'::uuid WHERE category = 'Wellness';
 
 -- For any unmapped categories, default to Business category
 UPDATE audio_tracks 

@@ -154,6 +154,7 @@ SET
     WHEN 'Data Science' THEN 4
     WHEN 'Psychology' THEN 5
     WHEN 'Technology' THEN 6
+    WHEN 'Wellness' THEN 7
     ELSE 99
   END,
   color_theme = CASE name
@@ -163,6 +164,7 @@ SET
     WHEN 'Data Science' THEN 'green'
     WHEN 'Psychology' THEN 'orange'
     WHEN 'Technology' THEN 'blue'
+    WHEN 'Wellness' THEN 'teal'
     ELSE 'blue'
   END,
   industry = CASE name
@@ -172,6 +174,7 @@ SET
     WHEN 'Data Science' THEN 'Technology'
     WHEN 'Psychology' THEN 'Healthcare'
     WHEN 'Technology' THEN 'Technology'
+    WHEN 'Wellness' THEN 'Healthcare'
     ELSE 'General'
   END
 WHERE level IS NULL OR level = 0;
@@ -184,7 +187,8 @@ SELECT * FROM (VALUES
   ('Marketing', 'marketing', '💼', 1, true, 'pink', 'Business', 3),
   ('Data Science', 'data-science', '🔬', 1, true, 'green', 'Technology', 4),
   ('Psychology', 'psychology', '🧠', 1, true, 'orange', 'Healthcare', 5),
-  ('Technology', 'technology', '💻', 1, true, 'blue', 'Technology', 6)
+  ('Technology', 'technology', '💻', 1, true, 'blue', 'Technology', 6),
+  ('Wellness', 'wellness', '🧘', 1, true, 'teal', 'Healthcare', 7)
 ) AS new_categories(name, slug, icon, level, is_active, color_theme, industry, sort_order)
 WHERE NOT EXISTS (
   SELECT 1 FROM categories WHERE categories.name = new_categories.name
