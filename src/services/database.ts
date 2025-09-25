@@ -8,6 +8,7 @@ import {
   Community,
   Creator,
   AudioTrack,
+  DailyBrief,
 } from '../types';
 
 
@@ -364,6 +365,79 @@ export const trackService = {
       gender: track.gender || '',
       audio_config: track.audio_config || {}
     })) || [];
+  }
+};
+
+type DailyBriefRecord = {
+  id: string;
+  user_id: string;
+  brief_date: string;
+  title: string | null;
+  summary: string | null;
+  audio_url: string | null;
+  storage_path: string | null;
+  duration: string | null;
+  status: string | null;
+  generated_at: string;
+  expires_at: string | null;
+  metadata: Record<string, unknown> | null;
+};
+
+const mapDailyBrief = (data: DailyBriefRecord): DailyBrief => ({
+  id: data.id,
+  userId: data.user_id,
+  briefDate: data.brief_date,
+  title: data.title ?? '',
+  summary: data.summary ?? '',
+  audioUrl: data.audio_url ?? '',
+  storagePath: data.storage_path ?? '',
+  duration: data.duration ?? '',
+  status: (data.status ?? 'pending') as DailyBrief['status'],
+  generatedAt: data.generated_at,
+  expiresAt: data.expires_at ?? null,
+  metadata: data.metadata ?? {}
+});
+
+export const dailyBriefService = {
+  async getLatest(): Promise<DailyBrief | null> {
+    const { data, error } = await supabase
+      .from('daily_briefs')
+      .select('*')
+      .order('generated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      logger.error('Error fetching latest daily brief:', error);
+      return null;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    return mapDailyBrief(data as DailyBriefRecord);
+  },
+
+  async getByDate(briefDate: string): Promise<DailyBrief | null> {
+    const { data, error } = await supabase
+      .from('daily_briefs')
+      .select('*')
+      .eq('brief_date', briefDate)
+      .order('generated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      logger.error('Error fetching daily brief by date:', error);
+      return null;
+    }
+
+    if (!data) {
+      return null;
+    }
+
+    return mapDailyBrief(data as DailyBriefRecord);
   }
 };
 

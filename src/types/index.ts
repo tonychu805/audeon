@@ -122,6 +122,21 @@ export interface AudioTrack {
   };
 }
 
+export interface DailyBrief {
+  id: string;
+  userId: string;
+  briefDate: string;
+  title: string;
+  summary: string;
+  audioUrl: string;
+  storagePath: string;
+  duration: string;
+  status: 'pending' | 'ready' | 'failed' | 'expired';
+  generatedAt: string;
+  expiresAt: string | null;
+  metadata: Record<string, unknown>;
+}
+
 export interface PlayerState {
   currentTrack: AudioTrack | null;
   isPlaying: boolean;

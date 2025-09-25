@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
 import { CommunityCard } from '../components/CommunityCard';
-import { creatorService, communityService } from '../services/database';
+import { SummaryOfDayCard } from '../components/SummaryOfDayCard';
+import { creatorService, communityService, dailyBriefService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
-import { Creator, Community } from '../types';
+import { Creator, Community, DailyBrief, AudioTrack } from '../types';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,8 +16,10 @@ export const HomePage: React.FC = () => {
   const [featuredCommunities, setFeaturedCommunities] = useState<Community[]>([]);
   const creatorScrollRef = useRef<HTMLDivElement | null>(null);
   const communityScrollRef = useRef<HTMLDivElement | null>(null);
-  const { setTracks } = usePlayer();
+  const { setTracks, playTrack, currentTrack, isPlaying } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
+  const [displayName, setDisplayName] = useState('Tony');
+  const [dailyBrief, setDailyBrief] = useState<DailyBrief | null>(null);
   
   const normalizeCategoryKey = (rawCategory?: string | null) => {
     if (!rawCategory) return '';
@@ -99,9 +102,107 @@ export const HomePage: React.FC = () => {
     [filteredTracks]
   );
 
+  const fallbackTrack = React.useMemo(() => (
+    filteredTracks[0] ?? audioTracks[0] ?? null
+  ), [filteredTracks, audioTracks]);
+
+  const dailyBriefTrack = React.useMemo<AudioTrack | null>(() => {
+    if (!dailyBrief) {
+      return null;
+    }
+
+    const releaseDate = dailyBrief.briefDate;
+
+    return {
+      id: `daily-brief-${releaseDate}`,
+      track_id: -1,
+      title: dailyBrief.title || 'Daily Brief',
+      url: '',
+      audioUrl: dailyBrief.audioUrl,
+      creator: 'Daily Brief',
+      community: '',
+      category: 'daily-brief',
+      sub_category: [],
+      summary: dailyBrief.summary || '',
+      releaseDate,
+      full_content: dailyBrief.summary || '',
+      read_time: '',
+      duration: dailyBrief.duration || '',
+      main_image: {
+        url: 'https://picsum.photos/seed/daily-brief/800/600',
+        caption: '',
+        width: 1200,
+        height: 630
+      },
+      voices: [],
+      gender: '',
+      audio_config: {
+        tone_override: '',
+        voice_preference: '',
+        custom_instructions: ''
+      }
+    };
+  }, [dailyBrief]);
+
+  const summaryTrack = dailyBriefTrack ?? fallbackTrack;
+
+  const combinedTracks = React.useMemo(() => {
+    if (!dailyBriefTrack) {
+      return audioTracks;
+    }
+
+    const withoutDailyBrief = audioTracks.filter(track => track.id !== dailyBriefTrack.id);
+    return [dailyBriefTrack, ...withoutDailyBrief];
+  }, [dailyBriefTrack, audioTracks]);
+
   React.useEffect(() => {
-    setTracks(audioTracks);
-  }, [setTracks, audioTracks]);
+    setTracks(combinedTracks);
+  }, [setTracks, combinedTracks]);
+
+  const isPlayingSummaryTrack = Boolean(
+    summaryTrack && currentTrack && currentTrack.id === summaryTrack.id && isPlaying
+  );
+
+  const handlePlayDailyBrief = () => {
+    if (dailyBriefTrack) {
+      playTrack(dailyBriefTrack);
+      return;
+    }
+
+    if (fallbackTrack) {
+      playTrack(fallbackTrack);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDailyBrief = async () => {
+      try {
+        const brief = await dailyBriefService.getLatest();
+        setDailyBrief(brief);
+      } catch (error) {
+        logger.error('Failed to load daily brief:', error);
+        setDailyBrief(null);
+      }
+    };
+
+    fetchDailyBrief();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const stored = localStorage.getItem('audeon:userName') || localStorage.getItem('audeon:displayName');
+    if (!stored) {
+      return;
+    }
+    const firstName = stored.trim().split(/\s+/)[0];
+    if (!firstName) {
+      return;
+    }
+    const normalized = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+    setDisplayName(normalized);
+  }, []);
 
   React.useEffect(() => {
     const loadData = async () => {
@@ -186,35 +287,35 @@ export const HomePage: React.FC = () => {
                style={{ scrollSnapType: 'x mandatory' }}>
             <div className="flex gap-2 items-center pr-4">
               {uniqueCategories.map(category => {
-                const displayName = category === 'all'
+                const displayNameLabel = category === 'all'
                   ? 'All'
                   : category
                       .split(/[\s_-]+/)
                     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
                     .join(' ');
-              const isActive = selectedCategory === category;
+                const isActive = selectedCategory === category;
 
-              return (
-                <button
-                  key={category}
-                  ref={el => {
-                    categoryButtonRefs.current[category] = el;
-                  }}
-                  type="button"
-                  onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full px-4 py-2.5 text-sm whitespace-nowrap font-medium transition-colors border min-h-[44px] flex items-center justify-center ${
-                    isActive
-                      ? 'bg-purple-600 border-purple-600 text-white shadow-md'
-                      : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
-                  }`}
-                  style={{ scrollSnapAlign: 'center' }}
-                  aria-pressed={isActive}
-                  aria-label={`Filter by ${displayName} category`}
-                >
-                  {displayName}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={category}
+                    ref={el => {
+                      categoryButtonRefs.current[category] = el;
+                    }}
+                    type="button"
+                    onClick={() => setSelectedCategory(category)}
+                    className={`rounded-full px-4 py-2.5 text-sm whitespace-nowrap font-medium transition-colors border min-h-[44px] flex items-center justify-center ${
+                      isActive
+                        ? 'bg-purple-600 border-purple-600 text-white shadow-md'
+                        : 'bg-gray-50 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400'
+                    }`}
+                    style={{ scrollSnapAlign: 'center' }}
+                    aria-pressed={isActive}
+                    aria-label={`Filter by ${displayNameLabel} category`}
+                  >
+                    {displayNameLabel}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -224,16 +325,23 @@ export const HomePage: React.FC = () => {
         </div>
       </div>
 
+      <SummaryOfDayCard
+        canPlay={Boolean(summaryTrack)}
+        onPlayDailyBrief={handlePlayDailyBrief}
+        isPlaying={isPlayingSummaryTrack}
+        userName={displayName}
+      />
+
       {/* Latest Releases */}
       <section>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Latest Releases</h2>
         <div className="space-y-3">
           {featuredTracks.length > 0 ? (
             featuredTracks.map(track => (
-              <TrackCard 
-                key={track.id} 
-                track={track} 
-                showSaveButton 
+              <TrackCard
+                key={track.id}
+                track={track}
+                showSaveButton
                 onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
               />
             ))
