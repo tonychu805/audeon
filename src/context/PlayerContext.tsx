@@ -2,6 +2,27 @@ import React, { createContext, useContext, useState, useRef, useEffect, useMemo,
 import { AudioTrack, PlayerState } from '../types';
 import { logger } from '../utils/logger';
 
+const FALLBACK_ARTWORK_URL = 'https://picsum.photos/seed/audeon-lock-screen/512/512';
+
+const buildArtworkEntries = (track: AudioTrack) => {
+  const artwork: Array<{ src: string; sizes?: string; type?: string }> = [];
+  const appendArtwork = (src?: string | null) => {
+    if (!src) {
+      return;
+    }
+    artwork.push({
+      src,
+      sizes: '512x512',
+      type: src.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg'
+    });
+  };
+
+  appendArtwork(track?.main_image?.url);
+  appendArtwork(`${FALLBACK_ARTWORK_URL}?track=${encodeURIComponent(track.id)}`);
+
+  return artwork;
+};
+
 // Split contexts: State and Actions
 interface PlayerStateContextType extends PlayerState {
   tracks: AudioTrack[];
@@ -86,6 +107,99 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       audioRef.current.playbackRate = playbackSpeed;
     }
   }, [playbackSpeed]);
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) {
+      return;
+    }
+
+    const mediaSession = navigator.mediaSession;
+
+    const MediaMetadataConstructor = typeof MediaMetadata !== 'undefined' ? MediaMetadata : undefined;
+
+    if (currentTrack && MediaMetadataConstructor) {
+      try {
+        mediaSession.metadata = new MediaMetadataConstructor({
+          title: currentTrack.title || 'Audeon',
+          artist: currentTrack.creator || 'Audeon',
+          album: currentTrack.community || 'Audeon',
+          artwork: buildArtworkEntries(currentTrack)
+        });
+      } catch (error) {
+        logger.warn('Failed to set media session metadata:', error);
+      }
+    }
+
+    try {
+      mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+    } catch (error) {
+      logger.warn('Failed to set media session playback state:', error);
+    }
+
+    const audio = audioRef.current;
+    if (audio && typeof mediaSession.setPositionState === 'function') {
+      try {
+        mediaSession.setPositionState({
+          duration: Number.isFinite(audio.duration) ? audio.duration : 0,
+          playbackRate: Number.isFinite(audio.playbackRate) ? audio.playbackRate : playbackSpeed,
+          position: Number.isFinite(audio.currentTime) ? audio.currentTime : 0
+        });
+      } catch (error) {
+        logger.debug('Unable to update media session position state:', error);
+      }
+    }
+  }, [currentTrack, isPlaying, playbackSpeed]);
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined' || !('mediaSession' in navigator)) {
+      return;
+    }
+
+    const handlePlay = async () => {
+      if (!currentTrack) {
+        const nextTrackInQueue = tracks[0];
+        if (nextTrackInQueue) {
+          playTrack(nextTrackInQueue);
+        }
+        return;
+      }
+      setIsPlaying(true);
+    };
+
+    const handlePause = () => {
+      setIsPlaying(false);
+    };
+
+    const handleNext = () => {
+      nextTrack();
+    };
+
+    const handlePrevious = () => {
+      previousTrack();
+    };
+
+    const mediaSession = navigator.mediaSession;
+
+    const setHandler = (action: MediaSessionAction, handler: MediaSessionActionHandler | null) => {
+      try {
+        mediaSession.setActionHandler(action, handler);
+      } catch (error) {
+        logger.debug(`Media Session action ${action} not supported`, error);
+      }
+    };
+
+    setHandler('play', handlePlay);
+    setHandler('pause', handlePause);
+    setHandler('nexttrack', handleNext);
+    setHandler('previoustrack', handlePrevious);
+
+    return () => {
+      setHandler('play', null);
+      setHandler('pause', null);
+      setHandler('nexttrack', null);
+      setHandler('previoustrack', null);
+    };
+  }, [currentTrack, tracks, playTrack, nextTrack, previousTrack]);
 
   // Memoized state object - prevents recreation on every render
   const stateValue = useMemo(() => ({
