@@ -2,47 +2,24 @@ import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Users } from 'lucide-react';
-import { 
-  FaLinkedin,
-  FaTwitter, 
-  FaMedium,
-  FaGithub,
-  FaGlobe,
-  FaNewspaper
-} from 'react-icons/fa';
+import { getSocialPlatformIcon } from '../utils/socialLinks';
 import { TrackCard } from '../components/TrackCard';
 import { creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 import { Creator } from '../types';
 
-
-// Helper function to get platform icon
-const getPlatformIcon = (platform: string) => {
-  const iconProps = { size: 16, className: "text-gray-600" };
-  
-  switch (platform.toLowerCase()) {
-    case 'linkedin':
-      return <FaLinkedin {...iconProps} className="text-blue-600" />;
-    case 'twitter':
-      return <FaTwitter {...iconProps} className="text-sky-500" />;
-    case 'medium':
-      return <FaMedium {...iconProps} className="text-gray-900" />;
-    case 'substack':
-    case 'beehiiv':
-      return <FaNewspaper {...iconProps} className="text-orange-500" />; // Newsletter icon
-    case 'github':
-      return <FaGithub {...iconProps} className="text-gray-900" />;
-    case 'website':
-    default:
-      return <FaGlobe {...iconProps} className="text-gray-600" />;
-  }
-};
+interface CreatorLocationState {
+  from?: string;
+  categoryId?: string | null;
+}
 
 export const CreatorProfilePage: React.FC = () => {
   const { creatorId } = useParams<{ creatorId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = location.state as CreatorLocationState | null;
+  const from = locationState?.from;
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading: tracksLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
@@ -113,9 +90,6 @@ export const CreatorProfilePage: React.FC = () => {
             e.preventDefault();
             e.stopPropagation();
             logger.debug('Creator back button clicked');
-            
-            // Get the previous path from location state
-            const from = location.state?.from;
             logger.debug('Creator location state from:', from);
             
             // Smart navigation to prevent loops
@@ -127,6 +101,12 @@ export const CreatorProfilePage: React.FC = () => {
             } else if (from && from === currentPath) {
               logger.debug('Detected circular reference, navigating to home to prevent loop');
               navigate('/home', { replace: true });
+            } else if (from === '/explore' && locationState?.categoryId) {
+              logger.debug('Returning to explore with category:', locationState.categoryId);
+              navigate('/explore', {
+                replace: true,
+                state: { categoryId: locationState.categoryId }
+              });
             } else if (from) {
               logger.debug('Navigating back to:', from);
               navigate(from, { replace: true });
@@ -151,11 +131,11 @@ export const CreatorProfilePage: React.FC = () => {
 
       {/* Creator Header */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-6">
           <img 
             src={creator.image} 
             alt={creator.name}
-            className="w-20 h-20 rounded-full object-cover border-4 border-white/20"
+            className="w-24 h-24 rounded-2xl object-cover border-4 border-white/20 shadow-lg"
           />
           <div>
             <h2 className="text-2xl font-bold">{creator.name}</h2>
@@ -185,7 +165,7 @@ export const CreatorProfilePage: React.FC = () => {
                   title={link.name}
                   className="flex items-center justify-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group"
                 >
-                  {getPlatformIcon(link.platform)}
+                  {getSocialPlatformIcon(link.platform)}
                 </a>
               ))}
             </div>
@@ -206,7 +186,15 @@ export const CreatorProfilePage: React.FC = () => {
                 key={track.id} 
                 track={track} 
                 showSaveButton 
-                onClick={() => navigate(`/tracks/${track.id}`, { state: { from: `/creators/${creator.id}` } })}
+                onClick={() => {
+                  const previousState = locationState ? { ...locationState } : undefined;
+                  navigate(`/tracks/${track.id}`, {
+                    state: {
+                      from: `/creators/${creator.id}`,
+                      ...(previousState ? { previousState } : {})
+                    }
+                  });
+                }}
               />
             ))}
           </div>

@@ -1,18 +1,27 @@
 import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Users, ExternalLink } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+
 import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
 import { communityService, creatorService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
-import { Community, Creator } from '../types';
+import { Community, Creator, SocialLink } from '../types';
+import { getSocialPlatformIcon } from '../utils/socialLinks';
+
+interface CommunityLocationState {
+  from?: string;
+  categoryId?: string | null;
+}
 
 export const CommunityDetailPage: React.FC = () => {
   const { communityId } = useParams<{ communityId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = location.state as CommunityLocationState | null;
+  const from = locationState?.from;
   const { setTracks } = usePlayer();
   const { tracks: audioTracks, isLoading: tracksLoading } = useAudioTracks();
   const [community, setCommunity] = useState<Community | null>(null);
@@ -23,6 +32,49 @@ export const CommunityDetailPage: React.FC = () => {
     audioTracks.filter(track => track.community === community?.name), 
     [audioTracks, community?.name]
   );
+
+  const categoryTags = React.useMemo(() => {
+    const tags = new Set<string>();
+
+    communityTracks.forEach((track) => {
+      if (track.category) {
+        tags.add(track.category);
+      }
+      (track.sub_category ?? []).forEach((sub) => {
+        if (sub) {
+          tags.add(sub);
+        }
+      });
+    });
+
+    return Array.from(tags).slice(0, 6);
+  }, [communityTracks]);
+
+  const communitySocialLinks = React.useMemo<SocialLink[]>(() => {
+    if (!community) {
+      return [];
+    }
+
+    const links = (community.socialLinks ?? []).filter(
+      (link): link is SocialLink => Boolean(link?.url)
+    );
+    const hasWebsiteLink = links.some(
+      (link) => link.platform?.toLowerCase() === 'website'
+    );
+
+    if (community.website && !hasWebsiteLink) {
+      return [
+        ...links,
+        {
+          name: `${community.name} Website`,
+          url: community.website,
+          platform: 'website',
+        },
+      ];
+    }
+
+    return links;
+  }, [community]);
 
   useEffect(() => {
     const loadCommunityData = async () => {
@@ -119,14 +171,16 @@ export const CommunityDetailPage: React.FC = () => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            // Get the previous path from location state
-            const from = location.state?.from;
-            
             // Smart navigation to prevent loops
             if (from && from.includes('/tracks/')) {
               navigate('/home', { replace: true });
             } else if (from && from.includes('/creators/')) {
               navigate('/home', { replace: true });
+            } else if (from === '/explore' && locationState?.categoryId) {
+              navigate('/explore', {
+                replace: true,
+                state: { categoryId: locationState.categoryId }
+              });
             } else if (from) {
               navigate(from, { replace: true });
             } else {
@@ -148,36 +202,27 @@ export const CommunityDetailPage: React.FC = () => {
 
       {/* Community Header */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white">
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
           <img 
             src={community.logo} 
             alt={community.name}
-            className="w-20 h-20 rounded-lg object-contain bg-white/10 p-2 border-2 border-white/20"
+            className="w-20 h-20 rounded-xl object-cover border border-white/30 shadow-lg"
           />
-          <div className="flex-1">
+          <div>
             <h2 className="text-2xl font-bold">{community.name}</h2>
-            <div className="flex items-center space-x-4 text-sm mt-2">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4" />
-                <span>{communityTracks.length} tracks</span>
+            {categoryTags.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {categoryTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide text-white/90 backdrop-blur"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4" />
-                <span>{communityCreators.length} creators</span>
-              </div>
-            </div>
+            )}
           </div>
-          {community.website && (
-            <a
-              href={community.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-2 px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-colors"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span className="text-sm font-medium">Visit Website</span>
-            </a>
-          )}
         </div>
       </div>
 
@@ -185,30 +230,29 @@ export const CommunityDetailPage: React.FC = () => {
       <div className="bg-white rounded-xl p-6 border">
         <h3 className="text-lg font-semibold text-gray-900 mb-3">About {community.name}</h3>
         <p className="text-gray-700 leading-relaxed">{community.description}</p>
-      </div>
 
-      {/* Community Creators */}
-      {communityCreators.length > 0 && (
-        <section>
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Featured Creators ({communityCreators.length})
-          </h3>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {communityCreators.map(creator => (
-              <CreatorCard 
-                key={creator.id}
-                creator={creator} 
-                onClick={() => {
-                  navigate(`/creators/${creator.id}`, { 
-                    state: { from: community ? `/communities/${community.id}` : '/home' } 
-                  });
-                }}
-              />
-            ))}
+        {communitySocialLinks.length > 0 && (
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <h4 className="text-sm font-semibold text-gray-900 mb-3">
+              Connect with {community.name}
+            </h4>
+            <div className="flex flex-wrap gap-3">
+              {communitySocialLinks.map((link) => (
+                <a
+                  key={link.url}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={link.name}
+                  className="flex items-center justify-center p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  {getSocialPlatformIcon(link.platform)}
+                </a>
+              ))}
+            </div>
           </div>
-        </section>
-      )}
+        )}
+      </div>
 
       {/* Community Tracks */}
       <section>
@@ -235,6 +279,29 @@ export const CommunityDetailPage: React.FC = () => {
           </div>
         )}
       </section>
+
+      {/* Community Creators */}
+      {communityCreators.length > 0 && (
+        <section>
+          <h3 className="text-xl font-bold text-gray-900 mb-4">
+            Featured Creators ({communityCreators.length})
+          </h3>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {communityCreators.map(creator => (
+              <CreatorCard 
+                key={creator.id}
+                creator={creator} 
+                onClick={() => {
+                  navigate(`/creators/${creator.id}`, { 
+                    state: { from: community ? `/communities/${community.id}` : '/home' } 
+                  });
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

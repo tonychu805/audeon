@@ -8,14 +8,65 @@ import { useAudioTracks } from '../hooks/useAudioTracks';
 import { creatorService } from '../services/database';
 import { Creator } from '../types';
 
+interface TrackLocationState {
+  from?: string;
+  previousState?: {
+    from?: string;
+    categoryId?: string | null;
+  };
+}
+
 export const TrackDetailPage: React.FC = () => {
   const { trackId } = useParams<{ trackId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = location.state as TrackLocationState | null;
+  const from = locationState?.from;
+  const returnState = locationState?.previousState;
   const { currentTrack, isPlaying, playTrack, togglePlayPause, savedTracks, toggleSaved } = usePlayer();
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
   const track = audioTracks.find(t => t.id === trackId);
+
+  const handleBackNavigation = React.useCallback(() => {
+    logger.debug('Track back button clicked');
+    logger.debug('Track location state from:', from);
+
+    const currentPath = `/tracks/${trackId}`;
+    const navigateWithState = (target: string) => {
+      if (returnState) {
+        logger.debug('Passing return state during navigation');
+        navigate(target, { replace: true, state: returnState });
+      } else {
+        navigate(target, { replace: true });
+      }
+    };
+
+    if (from && from === currentPath) {
+      logger.debug('Detected circular reference, navigating to home to prevent loop');
+      navigate('/home', { replace: true });
+    } else if (from && (from.includes('/communities/') || from.includes('/creators/'))) {
+      logger.debug('Navigating back to community/creator page:', from);
+      navigateWithState(from);
+    } else if (from) {
+      logger.debug('Navigating back to:', from);
+      navigateWithState(from);
+    } else {
+      logger.debug('No state found, trying browser history');
+      if (typeof window !== 'undefined' && document.referrer && document.referrer.includes(window.location.origin)) {
+        navigate(-1);
+      } else {
+        logger.debug('Using home as fallback');
+        navigate('/home', { replace: true });
+      }
+    }
+  }, [from, navigate, returnState, trackId]);
+
+  const handleBackButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleBackNavigation();
+  };
 
   // Load creator data when track changes
   useEffect(() => {
@@ -40,34 +91,7 @@ export const TrackDetailPage: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center space-x-4">
           <button 
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              logger.debug('Track back button clicked');
-              
-              const from = location.state?.from;
-              logger.debug('Track location state from:', from);
-              
-              const currentPath = `/tracks/${trackId}`;
-              if (from && from === currentPath) {
-                logger.debug('Detected circular reference, navigating to home to prevent loop');
-                navigate('/home', { replace: true });
-              } else if (from && (from.includes('/communities/') || from.includes('/creators/'))) {
-                logger.debug('Navigating back to community/creator page:', from);
-                navigate(from, { replace: true });
-              } else if (from) {
-                logger.debug('Navigating back to:', from);
-                navigate(from, { replace: true });
-              } else {
-                logger.debug('No state found, trying browser history');
-                if (typeof window !== 'undefined' && document.referrer && document.referrer.includes(window.location.origin)) {
-                  navigate(-1);
-                } else {
-                  logger.debug('Using home as fallback');
-                  navigate('/home', { replace: true });
-                }
-              }
-            }}
+            onClick={handleBackButtonClick}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             type="button"
           >
@@ -150,34 +174,7 @@ export const TrackDetailPage: React.FC = () => {
         {/* Header */}
         <div className="flex items-center space-x-4">
           <button 
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              logger.debug('Track back button clicked');
-              
-              const from = location.state?.from;
-              logger.debug('Track location state from:', from);
-              
-              const currentPath = `/tracks/${trackId}`;
-              if (from && from === currentPath) {
-                logger.debug('Detected circular reference, navigating to home to prevent loop');
-                navigate('/home', { replace: true });
-              } else if (from && (from.includes('/communities/') || from.includes('/creators/'))) {
-                logger.debug('Navigating back to community/creator page:', from);
-                navigate(from, { replace: true });
-              } else if (from) {
-                logger.debug('Navigating back to:', from);
-                navigate(from, { replace: true });
-              } else {
-                logger.debug('No state found, trying browser history');
-                if (typeof window !== 'undefined' && document.referrer && document.referrer.includes(window.location.origin)) {
-                  navigate(-1);
-                } else {
-                  logger.debug('Using home as fallback');
-                  navigate('/home', { replace: true });
-                }
-              }
-            }}
+            onClick={handleBackButtonClick}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
             type="button"
           >

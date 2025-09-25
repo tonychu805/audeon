@@ -18,7 +18,7 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onClick, layo
         <img
           src={creator.image}
           alt={creator.name}
-          className="w-16 h-16 rounded-full mx-auto mb-3 object-cover"
+          className="w-full aspect-square rounded-2xl mb-3 object-cover"
           onError={(e) => {
             logger.error('Creator image load error:', creator.name, creator.image);
             e.currentTarget.src = 'https://picsum.photos/64/64?random=' + creator.id;
@@ -45,7 +45,7 @@ export const CreatorCard: React.FC<CreatorCardProps> = ({ creator, onClick, layo
       <img
         src={creator.image}
         alt={creator.name}
-        className="w-full h-32 object-cover rounded-lg mb-3"
+        className="w-full h-40 object-cover rounded-2xl mb-3"
         onError={(e) => {
           logger.error('Creator image load error:', creator.name, creator.image);
           // Use placeholder for broken images

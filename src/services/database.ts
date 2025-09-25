@@ -79,6 +79,7 @@ export const communityService = {
       logo: normalizeCommunityLogo(community.logo ?? null, community.name ?? ''),
       description: community.description ?? '',
       website: community.website ?? '',
+      socialLinks: community.social_links || [],
     }));
   },
 
@@ -104,6 +105,7 @@ export const communityService = {
       logo: normalizeCommunityLogo(data.logo ?? null, data.name ?? ''),
       description: data.description ?? '',
       website: data.website ?? '',
+      socialLinks: data.social_links || [],
     };
   },
 };

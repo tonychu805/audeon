@@ -6,16 +6,22 @@ import { TrackCard } from '../components/TrackCard';
 import { CreatorCard } from '../components/CreatorCard';
 import { CommunityCard } from '../components/CommunityCard';
 import { SearchBar } from '../components/SearchBar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+
+type ExploreLocationState = {
+  categoryId?: string | null;
+};
 
 export const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialCategoryId = (location.state as ExploreLocationState | null)?.categoryId ?? null;
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<CategoryWithAssets[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [communities, setCommunities] = useState<Community[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategoryId);
   const [isLoading, setIsLoading] = useState(true);
   const { tracks, isLoading: tracksLoading } = useAudioTracks();
 
@@ -179,7 +185,10 @@ export const ExplorePage: React.FC = () => {
                   <CreatorCard
                     creator={creator}
                     onClick={() => navigate(`/creators/${creator.id}`, {
-                      state: { from: '/explore' }
+                      state: {
+                        from: '/explore',
+                        ...(selectedCategory ? { categoryId: selectedCategory } : {})
+                      }
                     })}
                     layout="compact"
                   />
@@ -213,7 +222,10 @@ export const ExplorePage: React.FC = () => {
                     <CommunityCard
                       community={community}
                       onClick={() => navigate(`/communities/${community.id}`, {
-                        state: { from: '/explore' }
+                        state: {
+                          from: '/explore',
+                          ...(selectedCategory ? { categoryId: selectedCategory } : {})
+                        }
                       })}
                     />
                   </div>

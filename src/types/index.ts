@@ -1,4 +1,4 @@
-export interface CreatorLink {
+export interface SocialLink {
   name: string;
   url: string;
   platform: string;
@@ -11,7 +11,7 @@ export interface Creator {
   bio: string;
   category: string;
   followerCount: number;
-  socialLinks?: CreatorLink[];
+  socialLinks?: SocialLink[];
 }
 
 export interface Voice {
@@ -89,6 +89,7 @@ export interface Community {
   logo: string;
   description: string;
   website: string;
+  socialLinks?: SocialLink[];
 }
 
 export interface AudioTrack {
