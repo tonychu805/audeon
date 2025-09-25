@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Navigation } from './Navigation';
 import { AudioPlayer } from './AudioPlayer';
 
 export const Layout: React.FC = () => {
   const location = useLocation();
+  const mainRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top on route change
+  // Scroll to top and focus main content on route change
   useEffect(() => {
-    // Use setTimeout to ensure DOM is updated first
     const timer = setTimeout(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      if (mainRef.current) {
+        mainRef.current.focus();
+      }
     }, 0);
     
     return () => clearTimeout(timer);
@@ -34,7 +37,18 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <main className="px-4 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+12rem)]">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-4 focus:left-4 focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg"
+      >
+        Skip to main content
+      </a>
+      <main
+        id="main-content"
+        ref={mainRef}
+        tabIndex={-1}
+        className="px-4 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+12rem)]"
+      >
         <Outlet />
       </main>
 
