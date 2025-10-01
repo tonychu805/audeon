@@ -1,8 +1,9 @@
-import { logger } from '../utils/logger';
 import React from 'react';
 import { Play, Pause, Heart, Calendar } from 'lucide-react';
 import { AudioTrack } from '../types';
 import { usePlayer } from '../context/PlayerContext';
+import { logger } from '../utils/logger';
+import { getTrackFallbackImage } from '../utils/imageFallbacks';
 
 interface TrackCardProps {
   track: AudioTrack;
@@ -14,6 +15,7 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
   const { currentTrack, isPlaying, playTrack, togglePlayPause, savedTracks, toggleSaved } = usePlayer();
   const isCurrentTrack = currentTrack?.id === track.id;
   const isSaved = savedTracks.includes(track.id);
+  const fallbackImage = getTrackFallbackImage(track.id);
 
   const handlePlayClick = () => {
     if (isCurrentTrack) {
@@ -45,15 +47,13 @@ export const TrackCard: React.FC<TrackCardProps> = ({ track, showSaveButton = fa
           src={track.main_image.url} 
           alt={track.title}
           className="w-20 h-20 rounded-lg object-contain flex-shrink-0"
-          onError={(e) => {
-            logger.error('Image load error for:', track.title, track.main_image.url);
-            // Fallback to a default image or keep current src
-            e.currentTarget.src = 'https://picsum.photos/80/80?random=' + track.id;
-            // Prevent further error events
-            e.currentTarget.onerror = null;
+          onError={(event) => {
+            logger.error('Track card image load error for:', track.title, track.main_image.url);
+            event.currentTarget.src = fallbackImage;
+            event.currentTarget.onerror = null;
           }}
           onLoad={() => {
-            logger.debug('Image loaded successfully for:', track.title, track.main_image.url);
+            logger.debug('Track card image loaded successfully for:', track.title, track.main_image.url);
           }}
         />
         <div className="flex-1">

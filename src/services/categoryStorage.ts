@@ -83,11 +83,14 @@ export class CategoryStorageService {
       'marketing': '1504711434969-e33886168f5c',
       'data science': '1551288049-d7102ea010ae',
       'psychology': '1559757148-5c350d0d3c56',
-      'technology': '1586339949916-3e9457bef6d3'
+      'technology': '1586339949916-3e9457bef6d3',
+      'wellness': '1544367567-0f2fcb009e0b',
+      'productivity': '1521737602349-7179cfd77f68'
     };
     
-    const imageId = imageMap[categoryName.toLowerCase()] || '1586339949916-3e9457bef6d3';
-    return `https://images.unsplash.com/photo-${imageId}?w=600&h=400&fit=crop`;
+    const normalizedName = categoryName.trim().toLowerCase();
+    const imageId = imageMap[normalizedName] || '1586339949916-3e9457bef6d3';
+    return `https://images.unsplash.com/photo-${imageId}?auto=format&fit=crop&w=600&h=400&q=80`;
   }
 
   // Upload and process category assets

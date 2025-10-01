@@ -24,6 +24,7 @@ export const HomePage: React.FC = () => {
   const normalizeCategoryKey = (rawCategory?: string | null) => {
     if (!rawCategory) return '';
     const value = rawCategory.toLowerCase();
+    if (value.includes('productivity')) return 'productivity';
     if (value.includes('product')) return 'product';
     if (value.includes('data')) return 'data';
     if (value.includes('psychology')) return 'psychology';
@@ -34,7 +35,7 @@ export const HomePage: React.FC = () => {
   };
 
   const uniqueCategories = React.useMemo(() => {
-    const defaultCategories = ['data', 'finance', 'marketing', 'psychology', 'product', 'wellness'];
+    const defaultCategories = ['data', 'finance', 'marketing', 'psychology', 'productivity', 'product', 'wellness'];
 
     const categoryMap = new Map<string, number>();
     audioTracks.forEach(track => {

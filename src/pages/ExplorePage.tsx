@@ -25,6 +25,8 @@ export const ExplorePage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { tracks, isLoading: tracksLoading } = useAudioTracks();
 
+  const httpUrlPattern = /^https?:\/\//i;
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -61,7 +63,7 @@ export const ExplorePage: React.FC = () => {
         title: category.name.toUpperCase(),
         author: `${categoryCreators.length} creators`,
         // Use heroImageUrl from new system, fallback to existing logic
-        image: category.heroImageUrl || `https://images.unsplash.com/photo-${getImageForCategory(category.name)}?w=300&h=200&fit=crop`,
+        image: getCategoryImage(category, 300, 200),
         type: 'category' as const,
         data: category
       };
@@ -75,9 +77,24 @@ export const ExplorePage: React.FC = () => {
       'marketing': '1504711434969-e33886168f5c',          // Keep current (good)
       'data science': '1551288049-d7102ea010ae',           // Data visualization
       'psychology': '1559757148-5c350d0d3c56',             // Psychology/mental health
-      'technology': '1586339949916-3e9457bef6d3'           // Keep current (good)
+      'technology': '1586339949916-3e9457bef6d3',          // Keep current (good)
+      'wellness': '1544367567-0f2fcb009e0b',               // Wellness / mindfulness
+      'productivity': '1521737602349-7179cfd77f68'         // Productivity systems
     };
-    return imageMap[categoryName.toLowerCase()] || '1586339949916-3e9457bef6d3';
+    return imageMap[categoryName.trim().toLowerCase()] || '1586339949916-3e9457bef6d3';
+  };
+
+  const buildCategoryFallbackImage = (categoryName: string, width: number, height: number) => {
+    const imageId = getImageForCategory(categoryName);
+    return `https://images.unsplash.com/photo-${imageId}?auto=format&fit=crop&w=${width}&h=${height}&q=80`;
+  };
+
+  const getCategoryImage = (category: CategoryWithAssets, width: number, height: number) => {
+    const fallbackImage = buildCategoryFallbackImage(category.name, width, height);
+    const validImage = [category.heroImageUrl, category.mobileImageUrl, category.thumbnailUrl]
+      .find((url): url is string => Boolean(url && httpUrlPattern.test(url)));
+
+    return validImage ?? fallbackImage;
   };
 
   const handleCategoryClick = (category: Category) => {
@@ -123,8 +140,9 @@ export const ExplorePage: React.FC = () => {
     const selectedCategoryData = categories.find(cat => cat.id === selectedCategory);
     const communitiesInCategory = selectedCategoryData ? getCommunitiesInCategory(selectedCategoryData.name) : [];
     
-    const categoryHeroImage = selectedCategoryData?.heroImageUrl ||
-      `https://images.unsplash.com/photo-${getImageForCategory(selectedCategoryData?.name || '')}?w=800&h=300&fit=crop`;
+    const categoryHeroImage = selectedCategoryData
+      ? getCategoryImage(selectedCategoryData, 800, 300)
+      : buildCategoryFallbackImage('', 800, 300);
 
     return (
       <div className="bg-white min-h-screen">
@@ -134,6 +152,13 @@ export const ExplorePage: React.FC = () => {
             src={categoryHeroImage}
             alt={selectedCategoryData?.name}
             className="w-full h-full object-cover"
+            onError={(event) => {
+              const fallbackSrc = buildCategoryFallbackImage(selectedCategoryData?.name || '', 800, 300);
+              if (event.currentTarget.src !== fallbackSrc) {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = fallbackSrc;
+              }
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
 
@@ -293,6 +318,13 @@ export const ExplorePage: React.FC = () => {
                 src={item.image}
                 alt={item.title}
                 className="w-full h-full object-cover opacity-70"
+                onError={(event) => {
+                  const fallbackSrc = buildCategoryFallbackImage(item.data.name, 300, 200);
+                  if (event.currentTarget.src !== fallbackSrc) {
+                    event.currentTarget.onerror = null;
+                    event.currentTarget.src = fallbackSrc;
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">

@@ -1,4 +1,3 @@
-import { logger } from '../utils/logger';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -7,6 +6,8 @@ import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
 import { creatorService } from '../services/database';
 import { Creator } from '../types';
+import { logger } from '../utils/logger';
+import { getTrackFallbackImage } from '../utils/imageFallbacks';
 
 interface TrackLocationState {
   from?: string;
@@ -118,6 +119,7 @@ export const TrackDetailPage: React.FC = () => {
 
   const isCurrentTrack = currentTrack?.id === track.id;
   const isSaved = savedTracks.includes(track.id);
+  const fallbackImage = getTrackFallbackImage(track.id);
 
   const handlePlayClick = () => {
     if (isCurrentTrack) {
@@ -189,6 +191,14 @@ export const TrackDetailPage: React.FC = () => {
               src={track.main_image?.url || '/default-cover.jpg'} 
               alt={track.title}
               className="w-full max-h-96 object-contain rounded-2xl"
+              onError={(event) => {
+                logger.error('Track detail image load error for:', track.title, track.main_image?.url);
+                event.currentTarget.src = fallbackImage;
+                event.currentTarget.onerror = null;
+              }}
+              onLoad={() => {
+                logger.debug('Track detail image loaded:', track.title, track.main_image?.url);
+              }}
             />
           </div>
 

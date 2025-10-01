@@ -10,6 +10,7 @@ import {
   AudioTrack,
   DailyBrief,
 } from '../types';
+import { getTrackFallbackImage } from '../utils/imageFallbacks';
 
 
 // Helper function to get Supabase storage URL
@@ -29,9 +30,6 @@ const getCreatorFallbackImage = (name: string) =>
   `https://ui-avatars.com/api/?background=6d28d9&color=ffffff&name=${encodeURIComponent(
     name || 'Creator'
   )}&size=256&bold=true`;
-
-const getTrackFallbackImage = (seed: string | number) =>
-  `https://picsum.photos/seed/track-${encodeURIComponent(String(seed))}/800/600`;
 
 const normalizeCommunityLogo = (logo: string | null, name: string): string => {
   if (logo && httpUrlPattern.test(logo)) {
@@ -60,6 +58,7 @@ const normalizeTrackImage = (
 
   return getTrackFallbackImage(trackId || title);
 };
+
 
 // Communities
 export const communityService = {
@@ -530,24 +529,38 @@ export const categoryService = {
         mainCategories.map(async (category) => {
           // Get assets
           const assets = await categoryStorage.getCategoryAssets(category.id);
+          const heroAsset = assets.find(asset => asset.asset_type === 'hero' && asset.is_primary)
+            ?? assets.find(asset => asset.asset_type === 'hero');
+          const mobileAsset = assets.find(asset => asset.asset_type === 'mobile' && asset.is_primary)
+            ?? assets.find(asset => asset.asset_type === 'mobile');
           
           // Get optimized URLs (with fallback to Unsplash during migration)
           let heroImageUrl: string;
           let mobileImageUrl: string;
 
-          // First check if we have direct image paths in the category record
-          if (category.hero_image_path) {
-            heroImageUrl = getStorageUrl('category_images', category.hero_image_path);
-          } else if (assets.length > 0) {
-            heroImageUrl = await categoryStorage.getOptimizedImageUrl(category.id, 'hero');
+          const heroImageFromPath = buildCategoryImageUrl(category.hero_image_path ?? null);
+          const mobileImageFromPath = buildCategoryImageUrl(category.mobile_image_path ?? null);
+          const heroImageFromAsset = buildCategoryImageUrl(heroAsset?.file_path);
+          const mobileImageFromAsset = buildCategoryImageUrl(mobileAsset?.file_path);
+          const heroImageOptimized = heroAsset ? await categoryStorage.getOptimizedImageUrl(category.id, 'hero') : null;
+          const mobileImageOptimized = mobileAsset ? await categoryStorage.getOptimizedImageUrl(category.id, 'mobile') : null;
+
+          if (heroImageFromPath) {
+            heroImageUrl = heroImageFromPath;
+          } else if (heroImageFromAsset) {
+            heroImageUrl = heroImageFromAsset;
+          } else if (heroImageOptimized) {
+            heroImageUrl = heroImageOptimized;
           } else {
             heroImageUrl = categoryStorage.getFallbackImageUrl(category.name);
           }
 
-          if (category.mobile_image_path) {
-            mobileImageUrl = getStorageUrl('category_images', category.mobile_image_path);
-          } else if (assets.length > 0) {
-            mobileImageUrl = await categoryStorage.getOptimizedImageUrl(category.id, 'mobile');
+          if (mobileImageFromPath) {
+            mobileImageUrl = mobileImageFromPath;
+          } else if (mobileImageFromAsset) {
+            mobileImageUrl = mobileImageFromAsset;
+          } else if (mobileImageOptimized) {
+            mobileImageUrl = mobileImageOptimized;
           } else {
             mobileImageUrl = heroImageUrl;
           }

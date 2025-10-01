@@ -87,6 +87,16 @@ const initialCategories: CategoryMigrationData[] = [
     keywords: ['wellness', 'mindfulness', 'fitness', 'self-care', 'health'],
     target_audience: ['health enthusiasts', 'coaches', 'wellbeing practitioners'],
     sort_order: 7
+  },
+  {
+    name: 'Productivity',
+    slug: 'productivity',
+    description: 'Systems, automation, and focus frameworks for getting more done',
+    industry: 'Business',
+    color_theme: 'yellow',
+    keywords: ['productivity', 'automation', 'systems', 'time management', 'focus'],
+    target_audience: ['operators', 'founders', 'knowledge workers'],
+    sort_order: 8
   }
 ];
 

@@ -125,9 +125,12 @@ describe('TrackCard Component', () => {
 
     renderWithProviders(<TrackCard track={testTrack} />)
 
-    // Should display some form of date (component formats to relative time like "2 weeks ago")
-    const dateElement = screen.getByText(/ago|yesterday|today|\d+ days?|\d+ weeks?|\d+ months?/i)
-    expect(dateElement).toBeInTheDocument()
+    // Component may display relative or locale-formatted dates depending on age of release date
+    const relativeDateElement = screen.queryByText(/ago|yesterday|today|\d+ days?|\d+ weeks?|\d+ months?/i)
+    const localeDate = new Date(testTrack.releaseDate).toLocaleDateString()
+    const localeDateElement = screen.queryByText(localeDate)
+
+    expect(relativeDateElement ?? localeDateElement).toBeInTheDocument()
   })
 
   it('prevents event bubbling on button clicks', async () => {
