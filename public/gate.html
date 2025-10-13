@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audeon — Private Access</title>
+    <style>
+      :root {
+        color-scheme: dark light;
+        --primary: #6366f1;
+        --bg: #0f172a;
+        --card: rgba(15, 23, 42, 0.86);
+        --text: #f8fafc;
+        --muted: #cbd5f5;
+        --error: #f87171;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at top, rgba(99, 102, 241, 0.45), transparent),
+          linear-gradient(180deg, var(--bg), #020617 60%);
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: var(--text);
+        padding: 1.5rem;
+      }
+
+      main {
+        width: min(420px, 100%);
+        background: var(--card);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        border-radius: 18px;
+        padding: 2.5rem 2rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 30px 60px rgba(15, 23, 42, 0.35);
+      }
+
+      h1 {
+        margin: 0 0 0.75rem;
+        font-size: clamp(1.6rem, 4vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        text-align: center;
+      }
+
+      p {
+        margin: 0 0 1.75rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      form {
+        display: grid;
+        gap: 1rem;
+      }
+
+      label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      input[type='password'] {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.6);
+        color: var(--text);
+        font-size: 1rem;
+        transition: border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      input[type='password']:focus {
+        outline: none;
+        border-color: rgba(99, 102, 241, 0.6);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      }
+
+      button {
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        border: none;
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.35);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .error {
+        display: none;
+        color: var(--error);
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .error.visible {
+        display: block;
+      }
+
+      .footer {
+        margin-top: 2.5rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: rgba(203, 213, 225, 0.65);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Access Audeon</h1>
+      <p>Enter the secure password shared with you to unlock the latest build.</p>
+
+      <form id="access-form">
+        <div>
+          <label for="password-input">Access password</label>
+          <input
+            id="password-input"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            required
+            minlength="6"
+            aria-describedby="form-error"
+          />
+        </div>
+        <button id="submit-button" type="submit">Unlock</button>
+        <div id="form-error" class="error" role="alert"></div>
+      </form>
+
+      <div class="footer">Access is restricted to invited testers — please keep this link private.</div>
+    </main>
+
+    <script>
+      const form = document.getElementById('access-form');
+      const passwordInput = document.getElementById('password-input');
+      const submitButton = document.getElementById('submit-button');
+      const errorMessage = document.getElementById('form-error');
+
+      const getRedirectTarget = () => {
+        const params = new URLSearchParams(window.location.search);
+        const redirectParam = params.get('redirect');
+        if (!redirectParam || redirectParam.startsWith('/gate')) {
+          return '/';
+        }
+        return redirectParam;
+      };
+
+      const setLoadingState = (isLoading) => {
+        submitButton.disabled = isLoading;
+        submitButton.textContent = isLoading ? 'Checking…' : 'Unlock';
+      };
+
+      const showError = (message) => {
+        errorMessage.textContent = message;
+        errorMessage.classList.add('visible');
+      };
+
+      const clearError = () => {
+        errorMessage.textContent = '';
+        errorMessage.classList.remove('visible');
+      };
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        clearError();
+
+        const password = passwordInput.value.trim();
+        if (!password) {
+          showError('Password is required.');
+          return;
+        }
+
+        try {
+          setLoadingState(true);
+          const response = await fetch('/.netlify/functions/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ password }),
+          });
+
+          if (!response.ok) {
+            if (response.status === 401) {
+              showError('Incorrect password. Please try again.');
+            } else {
+              showError('Something went wrong. Please try again in a moment.');
+            }
+            passwordInput.focus();
+            passwordInput.select();
+            return;
+          }
+
+          window.location.replace(getRedirectTarget());
+        } catch (error) {
+          console.error('[gate] verification failed', error);
+          showError('Unable to reach the server. Check your connection and retry.');
+        } finally {
+          setLoadingState(false);
+        }
+      });
+
+      passwordInput.focus();
+    </script>
+  </body>
+</html>

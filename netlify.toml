@@ -7,9 +7,12 @@
   path = "/tracks/*"
 
 [[edge_functions]]
+  function = "auth-gate"
+  path = "/*"
+
+[[edge_functions]]
   function = "test"
   path = "/test"
 
 [build.environment]
   NODE_VERSION = "20"
-
