@@ -52,6 +52,15 @@ src/
 
 See [Development Workflow](./Documents/Development_Workflow.md) for detailed guidelines.
 
+## Analytics
+
+Umami tracking is disabled by default. Provide the following environment variables in `.env` to enable production analytics:
+
+- `VITE_UMAMI_SCRIPT_URL` — full URL to your Umami `script.js`
+- `VITE_UMAMI_WEBSITE_ID` — UUID from the Umami dashboard
+- `VITE_UMAMI_HOST_URL` — optional; set when using a custom data endpoint
+- `VITE_UMAMI_DATA_DOMAINS` — optional; comma-separated domain allowlist
+
 ## Database
 
 Supabase PostgreSQL with:
