@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../syno_prediction"
+		},
+		{
+			"path": "../../../../Volumes/docker/syno_bi/repo"
+		}
+	],
+	"settings": {
+		"deno.path": "/Users/tonychu/Library/Preferences/netlify/deno-cli/deno",
+		"git.ignoreLimitWarning": true
+	}
+}
