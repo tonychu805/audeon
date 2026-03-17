@@ -16,14 +16,19 @@ type ExploreLocationState = {
 export const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const initialCategoryId = (location.state as ExploreLocationState | null)?.categoryId ?? null;
+  const categoryIdFromState = (location.state as ExploreLocationState | null)?.categoryId ?? null;
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<CategoryWithAssets[]>([]);
   const [creators, setCreators] = useState<Creator[]>([]);
   const [communities, setCommunities] = useState<Community[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategoryId);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryIdFromState);
   const [isLoading, setIsLoading] = useState(true);
   const { tracks, isLoading: tracksLoading } = useAudioTracks();
+
+  // Sync selectedCategory with location.state when navigation changes
+  useEffect(() => {
+    setSelectedCategory(categoryIdFromState);
+  }, [categoryIdFromState]);
 
   const httpUrlPattern = /^https?:\/\//i;
 

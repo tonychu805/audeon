@@ -30,6 +30,7 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab }) => {
           <Link
             key={id}
             to={path}
+            state={id === 'explore' ? null : undefined}
             aria-current={activeTab === id ? 'page' : undefined}
             className={`flex flex-col items-center py-2 px-4 rounded-2xl transition-colors duration-200 ${
               activeTab === id 

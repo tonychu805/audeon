@@ -8,6 +8,7 @@ import { SummaryOfDayCard } from '../components/SummaryOfDayCard';
 import { creatorService, communityService, dailyBriefService } from '../services/database';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+import { useSemanticSearch } from '../hooks/useSemanticSearch';
 import { Creator, Community, DailyBrief, AudioTrack } from '../types';
 
 export const HomePage: React.FC = () => {
@@ -20,6 +21,32 @@ export const HomePage: React.FC = () => {
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   const [displayName, setDisplayName] = useState('Tony');
   const [dailyBrief, setDailyBrief] = useState<DailyBrief | null>(null);
+
+  // Semantic search state
+  const {
+    query: searchQuery,
+    setQuery: setSearchQuery,
+    results: searchResults,
+    isLoading: isSearching,
+    hasSearched,
+    clearSearch,
+  } = useSemanticSearch();
+
+  // Track if user has ever completed a search this session (one-way flag)
+  const [hasEverSearched, setHasEverSearched] = useState(false);
+
+  // Only mark as searched when results have loaded (not while typing)
+  useEffect(() => {
+    if (hasSearched && !hasEverSearched) {
+      setHasEverSearched(true);
+    }
+  }, [hasSearched, hasEverSearched]);
+
+  // Determine if we're in search mode
+  const isSearchActive = searchQuery.trim().length > 0 || hasSearched;
+
+  // Hero is expanded only on first load, shrinks permanently once search results load
+  const isHeroExpanded = !hasEverSearched;
   
   const normalizeCategoryKey = (rawCategory?: string | null) => {
     if (!rawCategory) return '';
@@ -331,27 +358,84 @@ export const HomePage: React.FC = () => {
         onPlayDailyBrief={handlePlayDailyBrief}
         isPlaying={isPlayingSummaryTrack}
         userName={displayName}
+        searchQuery={searchQuery}
+        onSearchQueryChange={setSearchQuery}
+        onSearchClear={clearSearch}
+        isSearching={isSearching}
+        isExpanded={isHeroExpanded}
       />
 
-      {/* Latest Releases */}
+      {/* Search Results or Latest Releases */}
       <section>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Latest Releases</h2>
-        <div className="space-y-3">
-          {featuredTracks.length > 0 ? (
-            featuredTracks.map(track => (
-              <TrackCard
-                key={track.id}
-                track={track}
-                showSaveButton
-                onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
-              />
-            ))
-          ) : (
-            <div className="text-center py-6 border rounded-lg bg-gray-50">
-              <p className="text-gray-500 text-sm">No tracks available for this filter yet.</p>
+        {isSearchActive ? (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {hasSearched && searchResults.length > 0
+                  ? `Results for "${searchQuery}"`
+                  : hasSearched && searchResults.length === 0
+                  ? 'No results found'
+                  : 'Searching...'}
+              </h2>
+              {hasSearched && (
+                <button
+                  onClick={clearSearch}
+                  className="text-purple-600 text-sm font-medium hover:text-purple-700 transition-colors"
+                >
+                  Clear search
+                </button>
+              )}
             </div>
-          )}
-        </div>
+            <div className="space-y-3">
+              {isSearching ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-gray-500">Searching...</p>
+                </div>
+              ) : searchResults.length > 0 ? (
+                searchResults.map(track => (
+                  <TrackCard
+                    key={track.id}
+                    track={track}
+                    showSaveButton
+                    onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
+                  />
+                ))
+              ) : hasSearched ? (
+                <div className="text-center py-8 border rounded-lg bg-gray-50">
+                  <p className="text-gray-500 text-base mb-2">No tracks match your search.</p>
+                  <p className="text-gray-400 text-sm">Try different keywords or browse the latest releases below.</p>
+                  <button
+                    onClick={clearSearch}
+                    className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium hover:bg-purple-700 transition-colors"
+                  >
+                    Browse Latest Releases
+                  </button>
+                </div>
+              ) : null}
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Latest Releases</h2>
+            <div className="space-y-3">
+              {featuredTracks.length > 0 ? (
+                featuredTracks.map(track => (
+                  <TrackCard
+                    key={track.id}
+                    track={track}
+                    showSaveButton
+                    onClick={() => navigate(`/tracks/${track.id}`, { state: { from: '/home' } })}
+                  />
+                ))
+              ) : (
+                <div className="text-center py-6 border rounded-lg bg-gray-50">
+                  <p className="text-gray-500 text-sm">No tracks available for this filter yet.</p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </section>
 
       {/* Featured Creators */}

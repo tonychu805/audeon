@@ -59,6 +59,12 @@ const normalizeTrackImage = (
   return getTrackFallbackImage(trackId || title);
 };
 
+// Build category image URL from storage path
+const buildCategoryImageUrl = (path: string | null | undefined): string | null => {
+  if (!path) return null;
+  return getStorageUrl('category_images', path);
+};
+
 
 // Communities
 export const communityService = {
