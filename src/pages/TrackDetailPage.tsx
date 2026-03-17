@@ -4,7 +4,9 @@ import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Play, Pause, Heart, Calendar, Share, Download, MoreHorizontal } from 'lucide-react';
 import { usePlayer } from '../context/PlayerContext';
 import { useAudioTracks } from '../hooks/useAudioTracks';
+import { useSimilarTracks } from '../hooks/useSimilarTracks';
 import { creatorService } from '../services/database';
+import { UpNextSection } from '../components/UpNextSection';
 import { Creator } from '../types';
 import { logger } from '../utils/logger';
 import { getTrackFallbackImage } from '../utils/imageFallbacks';
@@ -28,6 +30,12 @@ export const TrackDetailPage: React.FC = () => {
   const { tracks: audioTracks, isLoading } = useAudioTracks();
   const [creator, setCreator] = useState<Creator | null>(null);
   const track = audioTracks.find(t => t.id === trackId);
+
+  // Fetch similar tracks for recommendations
+  const { tracks: similarTracks, isLoading: isLoadingSimilar } = useSimilarTracks(
+    track?.track_id ?? null,
+    5
+  );
 
   const handleBackNavigation = React.useCallback(() => {
     logger.debug('Track back button clicked');
@@ -269,6 +277,13 @@ export const TrackDetailPage: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900 mb-4">About this episode</h2>
           <p className="text-gray-700 leading-relaxed">{track.summary || track.full_content}</p>
         </div>
+
+        {/* Up Next / Recommendations */}
+        <UpNextSection
+          tracks={similarTracks}
+          isLoading={isLoadingSimilar}
+          currentTrackId={trackId}
+        />
 
         {/* Comments Section Placeholder */}
         <div className="bg-white rounded-xl p-6 border">
